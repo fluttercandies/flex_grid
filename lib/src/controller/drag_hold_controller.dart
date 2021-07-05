@@ -64,4 +64,8 @@ class DragHoldController {
 
   bool get hasDrag => _drag != null;
   bool get hasHold => _hold != null;
+
+  double get extentAfter => position.extentAfter;
+
+  double get extentBefore => position.extentBefore;
 }

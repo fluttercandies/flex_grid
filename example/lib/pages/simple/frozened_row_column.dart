@@ -1,21 +1,12 @@
-import 'dart:ui';
-
-import 'package:example/data/tu_chong_repository.dart';
-import 'package:example/data/tu_chong_source.dart';
+import 'package:example/data/flex_grid_source.dart';
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:flutter/material.dart';
 import 'package:flex_grid/flex_grid.dart';
+import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
 
 const double cellHeight = 60;
-
+const double cellWidth = 100;
 const double leftRightMargin = 15;
-List<String> cloumnNames = <String>[
-  'AuthorName',
-  'Favorites',
-  'Comments',
-  'Time',
-  'Followers',
-];
 
 @FFRoute(
   name: 'fluttercandies://FrozenedRowColumn',
@@ -34,42 +25,68 @@ class FrozenedRowColumn extends StatefulWidget {
 }
 
 class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
-  TuChongRepository listSourceRepository = TuChongRepository(maxLength: 100);
+  FlexGridSource source = FlexGridSource();
 
   @override
   Widget build(BuildContext context) {
-    final double windowWidth = MediaQueryData.fromWindow(window).size.width;
-
-    final double cellWidth = (windowWidth - leftRightMargin * 2) / 3;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: leftRightMargin),
-      child: FlexGrid<TuChongItem>(
+    final Color borderColor = Colors.grey.withOpacity(0.5);
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: borderColor,
+        ),
+      ),
+      margin: const EdgeInsets.all(15),
+      child: FlexGrid<GridRow>(
         frozenedColumnsCount: 1,
         frozenedRowsCount: 1,
         cellHeight: cellHeight,
         headerHeight: cellHeight,
-        columnsCount: cloumnNames.length,
-        cellBuilder:
-            (BuildContext context, TuChongItem data, int row, int column) {
+        columnsCount: GridRow.cloumnNames.length,
+        physics: const AlwaysScrollableClampingScrollPhysics(),
+        cellBuilder: (BuildContext context, GridRow data, int row, int column) {
           return Container(
-            color: Colors.white,
             width: cellWidth,
             height: cellHeight,
             alignment: Alignment.center,
-            child: Text(data.columns[column].toString()),
+            child: Text(column == 0 ? '$row' : data.columns[column].toString()),
+            decoration: BoxDecoration(
+              color: column == 0 || row == 0 ? Colors.yellow : Colors.white,
+              border: Border(
+                bottom: BorderSide(
+                  color: borderColor,
+                ),
+                right: column == GridRow.cloumnNames.length - 1
+                    ? BorderSide.none
+                    : BorderSide(
+                        color: borderColor,
+                      ),
+              ),
+            ),
           );
         },
         headerBuilder: (BuildContext context, int index) {
           return Container(
-            color: Colors.white,
             width: cellWidth,
             height: cellHeight,
             alignment: Alignment.center,
-            child: Text(cloumnNames[index]),
+            decoration: BoxDecoration(
+              color: Colors.lightGreen,
+              border: Border(
+                bottom: BorderSide(
+                  color: borderColor,
+                ),
+                right: index == GridRow.cloumnNames.length - 1
+                    ? BorderSide.none
+                    : BorderSide(
+                        color: borderColor,
+                      ),
+              ),
+            ),
+            child: Text(GridRow.cloumnNames[index]),
           );
         },
-        list: listSourceRepository,
+        source: source,
       ),
     );
   }

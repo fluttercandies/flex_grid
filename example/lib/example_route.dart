@@ -5,8 +5,10 @@
 
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:flutter/widgets.dart';
+import 'pages/complex/excel.dart';
 import 'pages/main_page.dart';
 import 'pages/simple/frozened_row_column.dart';
+import 'pages/simple/tab_view.dart';
 
 // ignore_for_file: prefer_const_literals_to_create_immutables
 FFRouteSettings getRouteSettings({
@@ -16,6 +18,17 @@ FFRouteSettings getRouteSettings({
   final Map<String, dynamic> safeArguments =
       arguments ?? const <String, dynamic>{};
   switch (name) {
+    case 'fluttercandies://Excel':
+      return FFRouteSettings(
+        name: name,
+        arguments: arguments,
+        widget: ExcelDemo(
+          key: asT<Key>(safeArguments['key']),
+        ),
+        routeName: 'Excel',
+        description: 'Excel',
+        exts: <String, dynamic>{'group': 'Complex', 'order': 0},
+      );
     case 'fluttercandies://FrozenedRowColumn':
       return FFRouteSettings(
         name: name,
@@ -26,6 +39,17 @@ FFRouteSettings getRouteSettings({
         routeName: 'FrozenedRowColumn',
         description: 'FrozenedRowColumn',
         exts: <String, dynamic>{'group': 'Simple', 'order': 0},
+      );
+    case 'fluttercandies://TabView':
+      return FFRouteSettings(
+        name: name,
+        arguments: arguments,
+        widget: TabView(
+          key: asT<Key>(safeArguments['key']),
+        ),
+        routeName: 'TabView',
+        description: 'TabView',
+        exts: <String, dynamic>{'group': 'Simple', 'order': 1},
       );
     case 'fluttercandies://demogrouppage':
       return FFRouteSettings(

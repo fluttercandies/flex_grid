@@ -62,13 +62,16 @@ class CommonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          title,
+    return SafeArea(
+      bottom: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            title,
+          ),
         ),
+        body: child,
       ),
-      body: child,
     );
   }
 }

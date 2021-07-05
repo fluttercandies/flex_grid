@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
+import 'controller/drag_hold_controller.dart';
 import 'controller/scroll_controller.dart';
 import 'controller/scroll_physics.dart';
 import 'typedef.dart';
@@ -13,7 +14,7 @@ class FlexGrid<T> extends StatefulWidget {
   const FlexGrid({
     @required this.headerBuilder,
     @required this.cellBuilder,
-    @required this.list,
+    @required this.source,
     @required this.columnsCount,
     this.frozenedColumnsCount = 0,
     this.frozenedRowsCount = 0,
@@ -45,7 +46,7 @@ class FlexGrid<T> extends StatefulWidget {
   final CellBuilder<T> cellBuilder;
   final RowBuilder<T> rowBuilder;
   final HeaderBuilder headerBuilder;
-  final LoadingMoreBase<T> list;
+  final LoadingMoreBase<T> source;
 
   /// in the case : loadingmore sliverlist in NestedScrollView, you should rebuild CustomScrollView,
   /// so that viewport can be computed again.
@@ -63,11 +64,8 @@ class FlexGrid<T> extends StatefulWidget {
 
 class _FlexGridState<T> extends State<FlexGrid<T>> {
   SyncScrollController _horizontalController;
-  SyncScrollController _pageController;
-  SyncScrollController get currentController =>
-      (_pageController?.hasDrag ?? false)
-          ? _pageController
-          : _horizontalController;
+  DragHoldController _horizontalPageController;
+
   ScrollBehavior _configuration;
   ScrollPhysics _physics;
   Map<Type, GestureRecognizerFactory> _gestureRecognizers =
@@ -84,6 +82,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
     super.didChangeDependencies();
     _updatePosition();
     _initGestureRecognizers();
+    _findHorizontalPageController();
   }
 
   @override
@@ -95,6 +94,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
     }
     _updatePosition();
     _initGestureRecognizers();
+    _findHorizontalPageController();
   }
 
   // Only call this from places that will definitely trigger a rebuild.
@@ -144,15 +144,17 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
     };
   }
 
-  // void _findPageController() {
-  //   final ScrollableState scrollableState =
-  //       context.findAncestorStateOfType<ScrollableState>();
-  //   if (scrollableState != null &&
-  //       scrollableState.widget.axis == Axis.horizontal &&
-  //       scrollableState.widget.controller is PageController) {
-  //     scrollableState.widget.controller.position;
-  //   }
-  // }
+  void _findHorizontalPageController() {
+    _horizontalPageController?.forceCancel();
+    _horizontalPageController = null;
+    final ScrollableState scrollableState =
+        context.findAncestorStateOfType<ScrollableState>();
+    if (scrollableState != null &&
+        scrollableState.widget.axis == Axis.horizontal &&
+        scrollableState.widget.controller is PageController) {
+      _horizontalPageController = DragHoldController(scrollableState.position);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +165,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
           return LoadingMoreCustomScrollView(
             scrollDirection: Axis.vertical,
             rebuildCustomScrollView: true,
+            physics: widget.physics,
             controller: widget.controller,
             slivers: <Widget>[
               // headers
@@ -204,16 +207,16 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
               if (widget.frozenedRowsCount > 0)
                 SliverPinnedToBoxAdapter(
                   child: StreamBuilder<LoadingMoreBase<T>>(
-                    stream: widget.list.rebuild,
-                    initialData: widget.list,
+                    stream: widget.source.rebuild,
+                    initialData: widget.source,
                     builder: (BuildContext b,
                         AsyncSnapshot<LoadingMoreBase<T>> asyncSnapshot) {
-                      if (widget.list.isEmpty) {
+                      if (widget.source.isEmpty) {
                         return Container();
                       }
                       return Column(
                         children: List<Widget>.generate(
-                          min(widget.frozenedRowsCount, widget.list.length),
+                          min(widget.frozenedRowsCount, widget.source.length),
                           (int row) {
                             return SizedBox(
                               width: boxConstraints.maxWidth,
@@ -231,7 +234,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
                                           widget.frozenedColumnsCount,
                                           (int column) => widget.cellBuilder(
                                             context,
-                                            widget.list[row],
+                                            widget.source[row],
                                             row,
                                             column,
                                           ),
@@ -243,7 +246,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
                                       (BuildContext context, int column) {
                                         return widget.cellBuilder(
                                           context,
-                                          widget.list[row],
+                                          widget.source[row],
                                           row,
                                           column + widget.frozenedColumnsCount,
                                         );
@@ -265,7 +268,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
               // cell
               LoadingMoreSliverList<T>(
                 SliverListConfig<T>(
-                  sourceList: widget.list,
+                  sourceList: widget.source,
                   itemBuilder: (BuildContext context, T data, int row) {
                     return SizedBox(
                       width: boxConstraints.maxWidth,
@@ -282,7 +285,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
                                     widget.frozenedColumnsCount,
                                     (int column) => widget.cellBuilder(
                                           context,
-                                          widget.list[
+                                          widget.source[
                                               row + widget.frozenedRowsCount],
                                           row + widget.frozenedRowsCount,
                                           column,
@@ -294,7 +297,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
                               (BuildContext context, int column) {
                                 return widget.cellBuilder(
                                   context,
-                                  widget.list[row + widget.frozenedRowsCount],
+                                  widget.source[row + widget.frozenedRowsCount],
                                   row + widget.frozenedRowsCount,
                                   column + widget.frozenedColumnsCount,
                                 );
@@ -308,7 +311,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
                     );
                   },
                   childCountBuilder: (int index) =>
-                      widget.list.length - widget.frozenedRowsCount,
+                      widget.source.length - widget.frozenedRowsCount,
                   //childCount: widget.list.length - widget.frozenedRowsCount,
                 ),
               ),
@@ -322,15 +325,8 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
   void _handleDragDown(
     DragDownDetails details,
   ) {
-    _pageController?.forceCancel();
+    _horizontalPageController?.forceCancel();
     _horizontalController?.forceCancel();
-
-    // if (_tabBarViewState != null) {
-    //   _tabViewDragHoldController ??= DragHoldController(
-    //       // ignore: invalid_use_of_protected_member
-    //       _tabBarViewState.pageController.positions,
-    //       'tabview');
-    // }
     _horizontalController?.handleDragDown(details);
   }
 
@@ -340,32 +336,40 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
 
   void _handleDragUpdate(DragUpdateDetails details) {
     _handleTabView(details);
-
-    currentController.handleDragUpdate(details);
+    if (_horizontalPageController?.hasDrag ?? false) {
+      _horizontalPageController.handleDragUpdate(details);
+    } else {
+      _horizontalController.handleDragUpdate(details);
+    }
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    currentController.handleDragEnd(details);
+    if (_horizontalPageController?.hasDrag ?? false) {
+      _horizontalPageController.handleDragEnd(details);
+    } else {
+      _horizontalController.handleDragEnd(details);
+    }
   }
 
   void _handleDragCancel() {
     _horizontalController?.handleDragCancel();
-    _pageController?.handleDragCancel();
+    _horizontalPageController?.handleDragCancel();
   }
 
   bool _handleTabView(DragUpdateDetails details) {
-    if (_pageController != null) {
+    if (_horizontalPageController != null) {
       final double delta = details.delta.dx;
 
       if ((delta < 0 &&
               _horizontalController.extentAfter == 0 &&
-              _pageController.extentAfter != 0) ||
+              _horizontalPageController.extentAfter != 0) ||
           (delta > 0 &&
               _horizontalController.extentBefore == 0 &&
-              _pageController.extentBefore != 0)) {
-        if (!_pageController.hasHold && !_pageController.hasDrag) {
-          _pageController.handleDragDown(null);
-          _pageController.handleDragStart(DragStartDetails(
+              _horizontalPageController.extentBefore != 0)) {
+        if (!_horizontalPageController.hasHold &&
+            !_horizontalPageController.hasDrag) {
+          _horizontalPageController.handleDragDown(null);
+          _horizontalPageController.handleDragStart(DragStartDetails(
             globalPosition: details.globalPosition,
             localPosition: details.localPosition,
             sourceTimeStamp: details.sourceTimeStamp,

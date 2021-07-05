@@ -90,7 +90,7 @@ class TuChongSource {
   }
 }
 
-class TuChongItem extends Row {
+class TuChongItem extends FlexGridRow {
   TuChongItem({
     this.authorId,
     this.collected,
