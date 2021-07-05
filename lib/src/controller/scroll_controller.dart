@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-
 import 'drag_hold_controller.dart';
 
-// ignore_for_file: invalid_use_of_protected_member
 /// Sync
 class SyncScrollController extends ScrollController with SyncController {
   /// Creates a scroll controller that continually updates its
@@ -43,15 +40,9 @@ mixin SyncController on ScrollController {
     super.attach(position);
     assert(!_positionToListener.containsKey(position));
     if (_positionToListener.isNotEmpty) {
-      if (position.pixels != scrollPosition.pixels) {
-        try {
-          position.forcePixels(scrollPosition.pixels);
-        } catch (e) {
-          // throw exception when view is out of viewport, make sure we finally fix pixel
-          SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
-            position.forcePixels(scrollPosition.pixels);
-          });
-        }
+      final double pixels = _positionToListener.keys.first.pixels;
+      if (position.pixels != pixels) {
+        position.correctPixels(pixels);
       }
     }
     _positionToListener[position] = DragHoldController(position);

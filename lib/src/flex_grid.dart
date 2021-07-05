@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:extended_sliver/extended_sliver.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
 import 'controller/scroll_controller.dart';
+import 'controller/scroll_physics.dart';
 import 'typedef.dart';
 
 class FlexGrid<T> extends StatefulWidget {
@@ -18,11 +21,17 @@ class FlexGrid<T> extends StatefulWidget {
     this.horizontalController,
     this.controller,
     this.physics,
+    this.headerHeight = 60,
+    this.cellHeight = 60,
+    this.rowBuilder,
     Key key,
   })  : assert(columnsCount != 0),
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
         assert(frozenedRowsCount != null && frozenedRowsCount >= 0),
         assert(columnsCount - frozenedColumnsCount >= 0),
+        assert(headerHeight > 0),
+        assert(cellHeight > 0),
+        assert(!(frozenedColumnsCount > 0 && rowBuilder != null)),
         super(key: key);
 
   /// The count of forzened columns
@@ -33,7 +42,8 @@ class FlexGrid<T> extends StatefulWidget {
 
   final int columnsCount;
 
-  final CellBuilder cellBuilder;
+  final CellBuilder<T> cellBuilder;
+  final RowBuilder<T> rowBuilder;
   final HeaderBuilder headerBuilder;
   final LoadingMoreBase<T> list;
 
@@ -44,6 +54,9 @@ class FlexGrid<T> extends StatefulWidget {
   final SyncScrollController horizontalController;
   final ScrollController controller;
   final ScrollPhysics physics;
+  final double headerHeight;
+  final double cellHeight;
+
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -145,127 +158,163 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
   Widget build(BuildContext context) {
     return RawGestureDetector(
       gestures: _gestureRecognizers,
-      child: LoadingMoreCustomScrollView(
-        rebuildCustomScrollView: true,
-        controller: widget.controller,
-        slivers: <Widget>[
-          // headers
-          SliverPinnedToBoxAdapter(
-            child: CustomScrollView(
-              controller: _horizontalController,
-              scrollDirection: Axis.horizontal,
-              slivers: <Widget>[
-                if (widget.frozenedColumnsCount > 0)
-                  SliverPinnedToBoxAdapter(
-                    child: Row(
-                      children: List<Widget>.generate(
-                          widget.frozenedColumnsCount,
-                          (int column) =>
-                              widget.headerBuilder(context, column)),
-                    ),
-                  ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int column) {
-                      return widget.headerBuilder(
-                        context,
-                        column + widget.frozenedColumnsCount,
-                      );
-                    },
-                    childCount:
-                        widget.columnsCount - widget.frozenedColumnsCount,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // frozened rows
-          if (widget.frozenedRowsCount > 0)
-            SliverPinnedToBoxAdapter(
-              child: Column(
-                children: List<Widget>.generate(
-                  widget.frozenedRowsCount,
-                  (int row) {
-                    return CustomScrollView(
-                      scrollDirection: Axis.horizontal,
-                      controller: _horizontalController,
-                      slivers: <Widget>[
-                        if (widget.frozenedColumnsCount > 0)
-                          SliverPinnedToBoxAdapter(
-                            child: Row(
-                              children: List<Widget>.generate(
-                                  widget.frozenedColumnsCount,
-                                  (int column) => widget.cellBuilder(
-                                        context,
-                                        widget.list[row],
-                                        row,
-                                        column,
-                                      )),
-                            ),
-                          ),
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (BuildContext context, int column) {
-                              return widget.cellBuilder(
-                                context,
-                                widget.list[row],
-                                row,
-                                column + widget.frozenedColumnsCount,
-                              );
-                            },
-                            childCount: widget.columnsCount -
+      child: LayoutBuilder(
+        builder: (BuildContext b, BoxConstraints boxConstraints) {
+          return LoadingMoreCustomScrollView(
+            scrollDirection: Axis.vertical,
+            rebuildCustomScrollView: true,
+            controller: widget.controller,
+            slivers: <Widget>[
+              // headers
+              SliverPinnedToBoxAdapter(
+                child: SizedBox(
+                  width: boxConstraints.maxWidth,
+                  height: widget.cellHeight,
+                  child: CustomScrollView(
+                    controller: _horizontalController,
+                    physics: const NeverScrollableClampingScrollPhysics(),
+                    scrollDirection: Axis.horizontal,
+                    slivers: <Widget>[
+                      if (widget.frozenedColumnsCount > 0)
+                        SliverPinnedToBoxAdapter(
+                          child: Row(
+                            children: List<Widget>.generate(
                                 widget.frozenedColumnsCount,
+                                (int column) =>
+                                    widget.headerBuilder(context, column)),
                           ),
                         ),
-                      ],
-                    );
-                  },
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int column) {
+                            return widget.headerBuilder(
+                              context,
+                              column + widget.frozenedColumnsCount,
+                            );
+                          },
+                          childCount:
+                              widget.columnsCount - widget.frozenedColumnsCount,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-
-          // cell
-          LoadingMoreSliverList<T>(
-            SliverListConfig<T>(
-              itemBuilder: (BuildContext context, T data, int row) {
-                return CustomScrollView(
-                  scrollDirection: Axis.horizontal,
-                  controller: _horizontalController,
-                  slivers: <Widget>[
-                    if (widget.frozenedColumnsCount > 0)
-                      SliverPinnedToBoxAdapter(
-                        child: Row(
-                          children: List<Widget>.generate(
-                              widget.frozenedColumnsCount,
-                              (int column) => widget.cellBuilder(
-                                    context,
-                                    widget.list[row + widget.frozenedRowsCount],
-                                    row + widget.frozenedRowsCount,
-                                    column,
-                                  )),
+              // frozened rows
+              if (widget.frozenedRowsCount > 0)
+                SliverPinnedToBoxAdapter(
+                  child: StreamBuilder<LoadingMoreBase<T>>(
+                    stream: widget.list.rebuild,
+                    initialData: widget.list,
+                    builder: (BuildContext b,
+                        AsyncSnapshot<LoadingMoreBase<T>> asyncSnapshot) {
+                      if (widget.list.isEmpty) {
+                        return Container();
+                      }
+                      return Column(
+                        children: List<Widget>.generate(
+                          min(widget.frozenedRowsCount, widget.list.length),
+                          (int row) {
+                            return SizedBox(
+                              width: boxConstraints.maxWidth,
+                              height: widget.cellHeight,
+                              child: CustomScrollView(
+                                controller: _horizontalController,
+                                physics:
+                                    const NeverScrollableClampingScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                slivers: <Widget>[
+                                  if (widget.frozenedColumnsCount > 0)
+                                    SliverPinnedToBoxAdapter(
+                                      child: Row(
+                                        children: List<Widget>.generate(
+                                          widget.frozenedColumnsCount,
+                                          (int column) => widget.cellBuilder(
+                                            context,
+                                            widget.list[row],
+                                            row,
+                                            column,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  SliverList(
+                                    delegate: SliverChildBuilderDelegate(
+                                      (BuildContext context, int column) {
+                                        return widget.cellBuilder(
+                                          context,
+                                          widget.list[row],
+                                          row,
+                                          column + widget.frozenedColumnsCount,
+                                        );
+                                      },
+                                      childCount: widget.columnsCount -
+                                          widget.frozenedColumnsCount,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
+                      );
+                    },
+                  ),
+                ),
+
+              // cell
+              LoadingMoreSliverList<T>(
+                SliverListConfig<T>(
+                  sourceList: widget.list,
+                  itemBuilder: (BuildContext context, T data, int row) {
+                    return SizedBox(
+                      width: boxConstraints.maxWidth,
+                      height: widget.cellHeight,
+                      child: CustomScrollView(
+                        controller: _horizontalController,
+                        physics: const NeverScrollableClampingScrollPhysics(),
+                        scrollDirection: Axis.horizontal,
+                        slivers: <Widget>[
+                          if (widget.frozenedColumnsCount > 0)
+                            SliverPinnedToBoxAdapter(
+                              child: Row(
+                                children: List<Widget>.generate(
+                                    widget.frozenedColumnsCount,
+                                    (int column) => widget.cellBuilder(
+                                          context,
+                                          widget.list[
+                                              row + widget.frozenedRowsCount],
+                                          row + widget.frozenedRowsCount,
+                                          column,
+                                        )),
+                              ),
+                            ),
+                          SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (BuildContext context, int column) {
+                                return widget.cellBuilder(
+                                  context,
+                                  widget.list[row + widget.frozenedRowsCount],
+                                  row + widget.frozenedRowsCount,
+                                  column + widget.frozenedColumnsCount,
+                                );
+                              },
+                              childCount: widget.columnsCount -
+                                  widget.frozenedColumnsCount,
+                            ),
+                          ),
+                        ],
                       ),
-                    SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int column) {
-                          return widget.cellBuilder(
-                            context,
-                            widget.list[row + widget.frozenedRowsCount],
-                            row + widget.frozenedRowsCount,
-                            column + widget.frozenedColumnsCount,
-                          );
-                        },
-                        childCount:
-                            widget.columnsCount - widget.frozenedColumnsCount,
-                      ),
-                    ),
-                  ],
-                );
-              },
-              childCount: widget.list.length - widget.frozenedRowsCount,
-            ),
-          ),
-        ],
+                    );
+                  },
+                  childCountBuilder: (int index) =>
+                      widget.list.length - widget.frozenedRowsCount,
+                  //childCount: widget.list.length - widget.frozenedRowsCount,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
