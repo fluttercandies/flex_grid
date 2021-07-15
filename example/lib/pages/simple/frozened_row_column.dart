@@ -1,6 +1,7 @@
 import 'package:example/data/flex_grid_source.dart';
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:flutter/material.dart';
+@FFArgumentImport()
 import 'package:flex_grid/flex_grid.dart';
 import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
 
@@ -18,8 +19,11 @@ const double leftRightMargin = 15;
   },
 )
 class FrozenedRowColumn extends StatefulWidget {
-  const FrozenedRowColumn({Key key}) : super(key: key);
-
+  const FrozenedRowColumn({
+    Key key,
+    this.syncPageController,
+  }) : super(key: key);
+  final SyncPageController syncPageController;
   @override
   _FrozenedRowColumnState createState() => _FrozenedRowColumnState();
 }
@@ -43,6 +47,7 @@ class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
         cellHeight: cellHeight,
         headerHeight: cellHeight,
         columnsCount: GridRow.cloumnNames.length,
+        horizontalSyncController: widget.syncPageController,
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder: (BuildContext context, GridRow data, int row, int column) {
           return Container(

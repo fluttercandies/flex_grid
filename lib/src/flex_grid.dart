@@ -1,13 +1,11 @@
 import 'dart:math';
 
 import 'package:extended_sliver/extended_sliver.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
-
-import 'controller/drag_hold_controller.dart';
 import 'controller/scroll_controller.dart';
 import 'controller/scroll_physics.dart';
+import 'horizontal_sync_scroll_minxin.dart';
 import 'typedef.dart';
 
 class FlexGrid<T> extends StatefulWidget {
@@ -25,6 +23,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.headerHeight = 60,
     this.cellHeight = 60,
     this.rowBuilder,
+    this.horizontalSyncController,
     Key key,
   })  : assert(columnsCount != 0),
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
@@ -57,32 +56,33 @@ class FlexGrid<T> extends StatefulWidget {
   final ScrollPhysics physics;
   final double headerHeight;
   final double cellHeight;
+  final SyncControllerMixin horizontalSyncController;
 
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
 
-class _FlexGridState<T> extends State<FlexGrid<T>> {
+class _FlexGridState<T> extends State<FlexGrid<T>>
+    with HorizontalSyncScrollMinxin {
   SyncScrollController _horizontalController;
-  DragHoldController _horizontalPageController;
+  SyncControllerMixin _horizontalSyncController;
 
   ScrollBehavior _configuration;
   ScrollPhysics _physics;
-  Map<Type, GestureRecognizerFactory> _gestureRecognizers =
-      const <Type, GestureRecognizerFactory>{};
+
   @override
   void initState() {
     super.initState();
     _horizontalController =
         widget.horizontalController ?? SyncScrollController();
+    _horizontalSyncController = widget.horizontalSyncController;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _updatePosition();
-    _initGestureRecognizers();
-    _findHorizontalPageController();
+    initGestureRecognizers();
   }
 
   @override
@@ -93,8 +93,8 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
       _horizontalController = widget.horizontalController;
     }
     _updatePosition();
-    _initGestureRecognizers();
-    _findHorizontalPageController();
+    _horizontalSyncController = widget.horizontalController;
+    initGestureRecognizers();
   }
 
   // Only call this from places that will definitely trigger a rebuild.
@@ -106,60 +106,9 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
     }
   }
 
-  void _initGestureRecognizers() {
-    _gestureRecognizers = <Type, GestureRecognizerFactory>{
-      HorizontalDragGestureRecognizer:
-          GestureRecognizerFactoryWithHandlers<HorizontalDragGestureRecognizer>(
-        () => HorizontalDragGestureRecognizer(),
-        (HorizontalDragGestureRecognizer instance) {
-          instance
-            ..onDown = (DragDownDetails details) {
-              _handleDragDown(
-                details,
-              );
-            }
-            ..onStart = (DragStartDetails details) {
-              _handleDragStart(
-                details,
-              );
-            }
-            ..onUpdate = (DragUpdateDetails details) {
-              _handleDragUpdate(
-                details,
-              );
-            }
-            ..onEnd = (DragEndDetails details) {
-              _handleDragEnd(
-                details,
-              );
-            }
-            ..onCancel = () {
-              _handleDragCancel();
-            }
-            ..minFlingDistance = _physics?.minFlingDistance
-            ..minFlingVelocity = _physics?.minFlingVelocity
-            ..maxFlingVelocity = _physics?.maxFlingVelocity;
-        },
-      ),
-    };
-  }
-
-  void _findHorizontalPageController() {
-    _horizontalPageController?.forceCancel();
-    _horizontalPageController = null;
-    final ScrollableState scrollableState =
-        context.findAncestorStateOfType<ScrollableState>();
-    if (scrollableState != null &&
-        scrollableState.widget.axis == Axis.horizontal &&
-        scrollableState.widget.controller is PageController) {
-      _horizontalPageController = DragHoldController(scrollableState.position);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return RawGestureDetector(
-      gestures: _gestureRecognizers,
+    return buildGestureDetector(
       child: LayoutBuilder(
         builder: (BuildContext b, BoxConstraints boxConstraints) {
           return LoadingMoreCustomScrollView(
@@ -322,64 +271,12 @@ class _FlexGridState<T> extends State<FlexGrid<T>> {
     );
   }
 
-  void _handleDragDown(
-    DragDownDetails details,
-  ) {
-    _horizontalPageController?.forceCancel();
-    _horizontalController?.forceCancel();
-    _horizontalController?.handleDragDown(details);
-  }
+  @override
+  SyncScrollController get horizontalController => _horizontalController;
 
-  void _handleDragStart(DragStartDetails details) {
-    _horizontalController?.handleDragStart(details);
-  }
+  @override
+  SyncControllerMixin get horizontalSyncController => _horizontalSyncController;
 
-  void _handleDragUpdate(DragUpdateDetails details) {
-    _handleTabView(details);
-    if (_horizontalPageController?.hasDrag ?? false) {
-      _horizontalPageController.handleDragUpdate(details);
-    } else {
-      _horizontalController.handleDragUpdate(details);
-    }
-  }
-
-  void _handleDragEnd(DragEndDetails details) {
-    if (_horizontalPageController?.hasDrag ?? false) {
-      _horizontalPageController.handleDragEnd(details);
-    } else {
-      _horizontalController.handleDragEnd(details);
-    }
-  }
-
-  void _handleDragCancel() {
-    _horizontalController?.handleDragCancel();
-    _horizontalPageController?.handleDragCancel();
-  }
-
-  bool _handleTabView(DragUpdateDetails details) {
-    if (_horizontalPageController != null) {
-      final double delta = details.delta.dx;
-
-      if ((delta < 0 &&
-              _horizontalController.extentAfter == 0 &&
-              _horizontalPageController.extentAfter != 0) ||
-          (delta > 0 &&
-              _horizontalController.extentBefore == 0 &&
-              _horizontalPageController.extentBefore != 0)) {
-        if (!_horizontalPageController.hasHold &&
-            !_horizontalPageController.hasDrag) {
-          _horizontalPageController.handleDragDown(null);
-          _horizontalPageController.handleDragStart(DragStartDetails(
-            globalPosition: details.globalPosition,
-            localPosition: details.localPosition,
-            sourceTimeStamp: details.sourceTimeStamp,
-          ));
-        }
-
-        return true;
-      }
-    }
-
-    return false;
-  }
+  @override
+  ScrollPhysics get physics => _physics;
 }

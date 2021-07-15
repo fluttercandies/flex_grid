@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'drag_hold_controller.dart';
 
-/// Sync
-class SyncScrollController extends ScrollController with SyncController {
+/// The [SyncScrollController] to sync pixels for all of positions
+class SyncScrollController extends ScrollController with SyncControllerMixin {
   /// Creates a scroll controller that continually updates its
   /// [initialScrollOffset] to match the last scroll notification it received.
   SyncScrollController({
@@ -15,7 +15,8 @@ class SyncScrollController extends ScrollController with SyncController {
             debugLabel: debugLabel);
 }
 
-class SyncPageController extends PageController with SyncController {
+/// The [SyncPageController] to scroll Pages(PageView or TabBarView) when [FlexGrid] is reach the horizontal boundary
+class SyncPageController extends PageController with SyncControllerMixin {
   /// Creates a page controller.
   ///
   /// The [initialPage], [keepPage], and [viewportFraction] arguments must not be null.
@@ -31,7 +32,7 @@ class SyncPageController extends PageController with SyncController {
 }
 
 /// The mixin for [ScrollController] to sync pixels for all of positions
-mixin SyncController on ScrollController {
+mixin SyncControllerMixin on ScrollController {
   final Map<ScrollPosition, DragHoldController> _positionToListener =
       <ScrollPosition, DragHoldController>{};
 

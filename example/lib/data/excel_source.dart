@@ -73,6 +73,7 @@ class ExcelSource extends LoadingMoreBase<List<dynamic>> {
       default:
     }
     clear();
+    onStateChanged(this);
     addAll(_rows.take(i));
     onStateChanged(this);
 

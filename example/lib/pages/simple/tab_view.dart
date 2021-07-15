@@ -1,4 +1,5 @@
 import 'package:example/pages/simple/frozened_row_column.dart';
+import 'package:extended_tabs/extended_tabs.dart';
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:flex_grid/flex_grid.dart';
 import 'package:flutter/material.dart';
@@ -21,10 +22,13 @@ class TabView extends StatefulWidget {
 
 class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
   TabController controller;
+  SyncPageController _syncPageController;
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 3, vsync: this);
+    const int index = 1;
+    controller = TabController(length: 3, vsync: this, initialIndex: index);
+    _syncPageController = SyncPageController(initialPage: index);
   }
 
   @override
@@ -41,14 +45,17 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
           labelColor: Colors.blue,
         ),
         Expanded(
-          child: TabBarView(
+          child: ExtendedTabBarView(
             physics: const LessSpringClampingScrollPhysics(),
             controller: controller,
+            pageController: _syncPageController,
             children: <Widget>[
               Container(
                 color: Colors.yellow,
               ),
-              const KeepAliveWidget(),
+              KeepAliveWidget(
+                syncPageController: _syncPageController,
+              ),
               Container(
                 color: Colors.blue,
               ),
@@ -61,8 +68,8 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
 }
 
 class KeepAliveWidget extends StatefulWidget {
-  const KeepAliveWidget({Key key}) : super(key: key);
-
+  const KeepAliveWidget({Key key, this.syncPageController}) : super(key: key);
+  final SyncPageController syncPageController;
   @override
   _KeepAliveWidgetState createState() => _KeepAliveWidgetState();
 }
@@ -72,7 +79,9 @@ class _KeepAliveWidgetState extends State<KeepAliveWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return const FrozenedRowColumn();
+    return FrozenedRowColumn(
+      syncPageController: widget.syncPageController,
+    );
   }
 
   @override

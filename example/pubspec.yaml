@@ -35,6 +35,7 @@ dependencies:
   intl: any
   fl_chart: any
   flutter_rating_bar: any
+  extended_tabs: 2.3.0-non-null-safety
   flutter:
     sdk: flutter
 

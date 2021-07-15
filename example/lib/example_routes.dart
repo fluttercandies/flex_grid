@@ -38,7 +38,7 @@ class Routes {
   ///
   /// [constructors] :
   ///
-  /// FrozenedRowColumn : [Key key]
+  /// FrozenedRowColumn : [Key key, SyncPageController syncPageController]
   ///
   /// [exts] : {group: Simple, order: 0}
   static const String fluttercandiesFrozenedRowColumn =
