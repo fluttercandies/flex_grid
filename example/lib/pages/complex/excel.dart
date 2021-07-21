@@ -10,8 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
 
-const double cellHeight = 60;
-const double cellWidth = 100;
 const double leftRightMargin = 15;
 
 @FFRoute(
@@ -57,8 +55,6 @@ class _ExcelDemoState extends State<ExcelDemo> {
       margin: const EdgeInsets.all(15),
       child: FlexGrid<List<dynamic>>(
         frozenedColumnsCount: 1,
-        cellHeight: cellHeight,
-        headerHeight: cellHeight,
         columnsCount: excelSource.maxCols,
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder:
@@ -170,10 +166,10 @@ class _ExcelDemoState extends State<ExcelDemo> {
           );
 
           return Container(
-            width: cellWidth,
-            height: cellHeight,
-            alignment: Alignment.center,
             child: widget,
+            width: 100,
+            height: 60,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               color: backgroundColor,
               border: Border(
@@ -209,8 +205,6 @@ class _ExcelDemoState extends State<ExcelDemo> {
                   default:
                 }
                 return SizedBox(
-                  width: cellWidth,
-                  height: cellHeight,
                   child: GestureDetector(
                     onTap: () {
                       stateSetter(() {
@@ -238,9 +232,6 @@ class _ExcelDemoState extends State<ExcelDemo> {
             );
           }
           header = Container(
-            width: cellWidth,
-            height: cellHeight,
-            alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.lightGreen,
               border: Border(

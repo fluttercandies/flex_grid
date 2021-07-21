@@ -9,6 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'pages/complex/excel.dart';
 import 'pages/complex/stock.dart';
 import 'pages/main_page.dart';
+import 'pages/simple/big_data.dart';
 import 'pages/simple/frozened_row_column.dart';
 import 'pages/simple/tab_view.dart';
 
@@ -20,6 +21,17 @@ FFRouteSettings getRouteSettings({
   final Map<String, dynamic> safeArguments =
       arguments ?? const <String, dynamic>{};
   switch (name) {
+    case 'fluttercandies://BigDataDemo':
+      return FFRouteSettings(
+        name: name,
+        arguments: arguments,
+        widget: BigDataDemo(
+          key: asT<Key>(safeArguments['key']),
+        ),
+        routeName: 'BigDataDemo',
+        description: 'BigDataDemo',
+        exts: <String, dynamic>{'group': 'Simple', 'order': 2},
+      );
     case 'fluttercandies://Excel':
       return FFRouteSettings(
         name: name,

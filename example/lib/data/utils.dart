@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flex_grid/flex_grid.dart';
+import 'package:flutter/material.dart';
+
 void tryCatch(Function f) {
   try {
     f?.call();
@@ -49,4 +52,70 @@ T asT<T>(dynamic value, [T defaultValue]) {
   }
 
   return defaultValue;
+}
+
+class MyCellStyle extends CellStyle {
+  MyCellStyle({
+    Alignment alignment = Alignment.center,
+    EdgeInsetsGeometry padding,
+    Color color,
+    Decoration decoration,
+    double height = 60,
+    double width = 100,
+    this.frozenedColumnsCount = 0,
+    this.frozenedRowsCount = 0,
+  }) : super(
+          alignment: alignment,
+          padding: padding,
+          color: color,
+          decoration: decoration,
+          height: height,
+          width: width,
+        );
+
+  final int frozenedColumnsCount;
+  final int frozenedRowsCount;
+  @override
+  Widget apply(
+    Widget child,
+    int row,
+    int column, {
+    CellStyleType type = CellStyleType.cell,
+  }) {
+    Color backgroundColor = Colors.white;
+
+    switch (type) {
+      case CellStyleType.header:
+        backgroundColor =
+            column < frozenedColumnsCount ? Colors.yellow : Colors.lightGreen;
+        break;
+      case CellStyleType.cell:
+        backgroundColor = row < frozenedRowsCount
+            ? Colors.purple
+            : (column < frozenedColumnsCount ? Colors.yellow : Colors.white);
+        break;
+
+      default:
+        backgroundColor = Colors.white;
+    }
+
+    return Container(
+      child: child,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.grey.withOpacity(0.5),
+          ),
+          right: BorderSide(
+            color: Colors.grey.withOpacity(0.5),
+          ),
+        ),
+      ),
+      alignment: alignment,
+      height: height,
+      width: width,
+    );
+  }
 }
