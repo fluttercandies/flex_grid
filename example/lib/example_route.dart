@@ -7,6 +7,7 @@ import 'package:flex_grid/flex_grid.dart';
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:flutter/widgets.dart';
 import 'pages/complex/excel.dart';
+import 'pages/complex/stock.dart';
 import 'pages/main_page.dart';
 import 'pages/simple/frozened_row_column.dart';
 import 'pages/simple/tab_view.dart';
@@ -42,6 +43,17 @@ FFRouteSettings getRouteSettings({
         routeName: 'FrozenedRowColumn',
         description: 'FrozenedRowColumn',
         exts: <String, dynamic>{'group': 'Simple', 'order': 0},
+      );
+    case 'fluttercandies://StockList':
+      return FFRouteSettings(
+        name: name,
+        arguments: arguments,
+        widget: StockList(
+          key: asT<Key>(safeArguments['key']),
+        ),
+        routeName: 'StockList',
+        description: 'StockList',
+        exts: <String, dynamic>{'group': 'Complex', 'order': 1},
       );
     case 'fluttercandies://TabView':
       return FFRouteSettings(

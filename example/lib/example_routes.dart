@@ -5,6 +5,7 @@
 const List<String> routeNames = <String>[
   'fluttercandies://Excel',
   'fluttercandies://FrozenedRowColumn',
+  'fluttercandies://StockList',
   'fluttercandies://TabView',
   'fluttercandies://demogrouppage',
   'fluttercandies://mainpage',
@@ -43,6 +44,21 @@ class Routes {
   /// [exts] : {group: Simple, order: 0}
   static const String fluttercandiesFrozenedRowColumn =
       'fluttercandies://FrozenedRowColumn';
+
+  /// 'StockList'
+  ///
+  /// [name] : 'fluttercandies://StockList'
+  ///
+  /// [routeName] : 'StockList'
+  ///
+  /// [description] : 'StockList'
+  ///
+  /// [constructors] :
+  ///
+  /// StockList : [Key key]
+  ///
+  /// [exts] : {group: Complex, order: 1}
+  static const String fluttercandiesStockList = 'fluttercandies://StockList';
 
   /// 'TabView'
   ///

@@ -36,6 +36,8 @@ dependencies:
   fl_chart: any
   flutter_rating_bar: any
   extended_tabs: 2.3.0-non-null-safety
+  uuid: any
+  timezone: any
   flutter:
     sdk: flutter
 
