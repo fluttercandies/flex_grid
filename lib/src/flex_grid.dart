@@ -26,6 +26,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.highPerformance = false,
     this.headerStyle,
     this.cellStyle,
+    //this.prototypeCell,
     Key key,
   })  : assert(columnsCount != 0),
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
@@ -40,6 +41,7 @@ class FlexGrid<T> extends StatefulWidget {
   /// The count of forzened rows
   final int frozenedRowsCount;
 
+  /// The count of columns, it should big than 0.
   final int columnsCount;
 
   final CellBuilder<T> cellBuilder;
@@ -56,7 +58,18 @@ class FlexGrid<T> extends StatefulWidget {
   final SyncControllerMixin horizontalSyncController;
 
   final ScrollPhysics physics;
+
+  /// If true, forces the children to have the given extent(Cell height/width) in the scroll
+  /// direction.
   final bool highPerformance;
+
+  /// Defines the main axis extent of all of this sliver's children.
+  ///
+  /// The [prototypeCell] is laid out before the rest of the sliver's children
+  /// and its size along the main axis fixes the size of each child. The
+  /// [prototypeCell] is essentially [Offstage]: it is not painted and it
+  /// cannot respond to input.
+  //final Widget prototypeCell;
 
   final CellStyle headerStyle;
   final CellStyle cellStyle;

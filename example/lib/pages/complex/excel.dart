@@ -56,6 +56,8 @@ class _ExcelDemoState extends State<ExcelDemo> {
       child: FlexGrid<List<dynamic>>(
         frozenedColumnsCount: 1,
         columnsCount: excelSource.maxCols,
+        headerStyle: ExcelCellStyle(),
+        cellStyle: ExcelCellStyle(),
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder:
             (BuildContext context, List<dynamic> data, int row, int column) {
@@ -232,6 +234,9 @@ class _ExcelDemoState extends State<ExcelDemo> {
             );
           }
           header = Container(
+            width: 100,
+            height: 60,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.lightGreen,
               border: Border(
@@ -252,5 +257,13 @@ class _ExcelDemoState extends State<ExcelDemo> {
         source: excelSource,
       ),
     );
+  }
+}
+
+class ExcelCellStyle extends CellStyle {
+  @override
+  Widget apply(Widget child, int row, int column,
+      {CellStyleType type = CellStyleType.cell}) {
+    return child;
   }
 }

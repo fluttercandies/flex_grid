@@ -25,7 +25,7 @@ class Routes {
   ///
   /// [constructors] :
   ///
-  /// BigDataDemo : [Key key]
+  /// HugeDataDemo : [Key key]
   ///
   /// [exts] : {group: Simple, order: 2}
   static const String fluttercandiesBigDataDemo =

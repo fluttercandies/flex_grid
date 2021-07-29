@@ -56,9 +56,7 @@ class DragHoldController {
   }
 
   void forceCancel() {
-    _hold?.cancel();
     _hold = null;
-    _drag?.cancel();
     _drag = null;
   }
 

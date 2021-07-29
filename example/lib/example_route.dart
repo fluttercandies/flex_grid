@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 import 'pages/complex/excel.dart';
 import 'pages/complex/stock.dart';
 import 'pages/main_page.dart';
-import 'pages/simple/big_data.dart';
 import 'pages/simple/frozened_row_column.dart';
+import 'pages/simple/huge_data.dart';
 import 'pages/simple/tab_view.dart';
 
 // ignore_for_file: prefer_const_literals_to_create_immutables
@@ -25,7 +25,7 @@ FFRouteSettings getRouteSettings({
       return FFRouteSettings(
         name: name,
         arguments: arguments,
-        widget: BigDataDemo(
+        widget: HugeDataDemo(
           key: asT<Key>(safeArguments['key']),
         ),
         routeName: 'BigDataDemo',

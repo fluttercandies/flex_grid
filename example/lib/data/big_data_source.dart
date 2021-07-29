@@ -12,7 +12,7 @@ class BigDataRow extends FlexGridRow {
 }
 
 class BigData extends LoadingMoreBase<BigDataRow> {
-  int _pageIndex = 1;
+  int _pageIndex = 0;
 
   void _load() {
     for (int i = 0; i < 15; i++) {
@@ -33,7 +33,7 @@ class BigData extends LoadingMoreBase<BigDataRow> {
 
   @override
   Future<bool> refresh([bool notifyStateChanged = false]) async {
-    _pageIndex = 1;
+    _pageIndex = 0;
     return super.refresh(notifyStateChanged);
   }
 }
