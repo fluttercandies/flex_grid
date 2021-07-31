@@ -38,6 +38,7 @@ dependencies:
   extended_tabs: 2.3.0-non-null-safety
   uuid: any
   timezone: any
+  gbk2utf8: any
   flutter:
     sdk: flutter
 

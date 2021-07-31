@@ -1,5 +1,7 @@
 import 'package:flex_grid/flex_grid.dart';
+import 'package:gbk2utf8/gbk2utf8.dart';
 import 'package:http_client_helper/http_client_helper.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
 const String _url = 'http://qt.gtimg.cn';
@@ -10,8 +12,7 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
   );
 
   static List<String> cloumnNames = <String>[
-    'Name',
-    'Symbol',
+    'Name/Code',
     'Price',
     'PreviousClose',
     'Open',
@@ -27,7 +28,7 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
   final List<String> symbols;
   int skipNumber = 0;
   @override
-  bool get hasMore => skipNumber != symbols.length;
+  bool get hasMore => skipNumber < symbols.length;
 
   @override
   Future<bool> refresh([bool notifyStateChanged = false]) {
@@ -49,10 +50,13 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
         return isSuccess;
       }
 
-      final List<String> stocks = result.body.split(';');
+      final List<String> stocks = gbk.decode(result.bodyBytes).split('\n');
+      stocks.removeWhere((String element) => element.isEmpty);
 
       if (stocks.isNotEmpty) {
-        addAll(stocks.map((String e) => StockInfo.fromLine(e)));
+        for (final String stock in stocks) {
+          add(StockInfo.fromLine(stock));
+        }
         skipNumber += stocks.length;
       }
 
@@ -121,12 +125,12 @@ class StockInfo with FlexGridRow {
   @override
   List<Object> get columns => <Object>[
         name,
-        code,
         price,
         preClose,
         open,
         volume,
         time,
+        //DateFormat('yyyy/MMddHHmmss').parseLoose(time),
         change,
         changePercent,
         high,

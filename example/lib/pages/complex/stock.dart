@@ -1,4 +1,3 @@
-import 'package:example/data/flex_grid_source.dart';
 import 'package:example/data/stock_repository.dart';
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +25,56 @@ class StockList extends StatefulWidget {
 }
 
 class _StockListState extends State<StockList> {
-  StockRepository source =
-      StockRepository(<String>['sh600519', 'sh000625', 'sz002818', 'sz']);
+  StockRepository source = StockRepository(<String>[
+    'sh600519',
+    'sz000625',
+    'sz002818',
+    'sz000333',
+    'sz000651',
+    'sh600031',
+    'sh000001',
+    'sz399001',
+    'sh688509',
+    'sh688511',
+    'sh688609',
+    'sh688819',
+    'sh688663',
+    'sh688668',
+    'sh688097',
+    'sh688575',
+    'sh688683',
+    'sh688323',
+    'sh688551',
+    'sh688676',
+    'sh600157',
+    'sh600769',
+    'sh603683',
+    'sh600421',
+    'sh603693',
+    'sh600483',
+    'sh601727',
+    'sh603985',
+    'sh603559',
+    'sh605167',
+    'sh601137',
+    'sh603214',
+    'sh605286',
+    'sh603115',
+    'sh601636',
+    'sh601222',
+    'sh600111',
+    'sh603305',
+    'sh603806',
+    'sh605186',
+    'sh603991',
+    'sh603063',
+    'sh601877',
+    'sh601016',
+    'sh600366',
+    'sh605111',
+    'sh603324',
+    'sh605117',
+  ]);
   int frozenedColumnsCount = 1;
   @override
   void initState() {
@@ -51,26 +98,19 @@ class _StockListState extends State<StockList> {
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder:
             (BuildContext context, StockInfo data, int row, int column) {
+          if (column == 0) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text(data.name),
+                Text(data.code),
+              ],
+            );
+          }
           return Container(
             child: Text(
               data.columns[column].toString(),
-              // style: TextStyle(
-              //   color: column == 4 || column == 5 ? data.changeColor : null,
-              // ),
-            ),
-            decoration: BoxDecoration(
-              color:
-                  column < frozenedColumnsCount ? Colors.yellow : Colors.white,
-              border: Border(
-                bottom: BorderSide(
-                  color: borderColor,
-                ),
-                right: column == GridRow.cloumnNames.length - 1
-                    ? BorderSide.none
-                    : BorderSide(
-                        color: borderColor,
-                      ),
-              ),
             ),
           );
         },
