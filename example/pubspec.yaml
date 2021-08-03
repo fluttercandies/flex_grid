@@ -39,6 +39,8 @@ dependencies:
   uuid: any
   timezone: any
   gbk2utf8: any
+  equatable: any
+  provider: any
   flutter:
     sdk: flutter
 

@@ -48,7 +48,7 @@ class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
         cellStyle: style,
         headerStyle: style,
         columnsCount: GridRow.cloumnNames.length,
-        horizontalSyncController: widget.syncPageController,
+        outerHorizontalSyncController: widget.syncPageController,
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder: (BuildContext context, GridRow data, int row, int column) {
           return Text(column == 0 ? '$row' : data.columns[column].toString());

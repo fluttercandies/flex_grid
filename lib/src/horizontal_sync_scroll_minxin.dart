@@ -7,8 +7,8 @@ mixin HorizontalSyncScrollMinxin {
   Map<Type, GestureRecognizerFactory> _gestureRecognizers;
   Map<Type, GestureRecognizerFactory> get gestureRecognizers =>
       _gestureRecognizers;
-  SyncScrollController get horizontalController;
-  SyncControllerMixin get horizontalSyncController;
+  SyncControllerMixin get horizontalController;
+  SyncControllerMixin get outerHorizontalSyncController;
   ScrollPhysics get physics;
 
   void initGestureRecognizers() {
@@ -52,7 +52,7 @@ mixin HorizontalSyncScrollMinxin {
   void _handleDragDown(
     DragDownDetails details,
   ) {
-    horizontalSyncController?.forceCancel();
+    outerHorizontalSyncController?.forceCancel();
     horizontalController?.forceCancel();
     horizontalController?.handleDragDown(details);
   }
@@ -63,16 +63,16 @@ mixin HorizontalSyncScrollMinxin {
 
   void _handleDragUpdate(DragUpdateDetails details) {
     _handleTabView(details);
-    if (horizontalSyncController?.hasDrag ?? false) {
-      horizontalSyncController.handleDragUpdate(details);
+    if (outerHorizontalSyncController?.hasDrag ?? false) {
+      outerHorizontalSyncController.handleDragUpdate(details);
     } else {
       horizontalController.handleDragUpdate(details);
     }
   }
 
   void _handleDragEnd(DragEndDetails details) {
-    if (horizontalSyncController?.hasDrag ?? false) {
-      horizontalSyncController.handleDragEnd(details);
+    if (outerHorizontalSyncController?.hasDrag ?? false) {
+      outerHorizontalSyncController.handleDragEnd(details);
     } else {
       horizontalController.handleDragEnd(details);
     }
@@ -80,23 +80,23 @@ mixin HorizontalSyncScrollMinxin {
 
   void _handleDragCancel() {
     horizontalController?.handleDragCancel();
-    horizontalSyncController?.handleDragCancel();
+    outerHorizontalSyncController?.handleDragCancel();
   }
 
   bool _handleTabView(DragUpdateDetails details) {
-    if (horizontalSyncController != null) {
+    if (outerHorizontalSyncController != null) {
       final double delta = details.delta.dx;
 
       if ((delta < 0 &&
               horizontalController.extentAfter == 0 &&
-              horizontalSyncController.extentAfter != 0) ||
+              outerHorizontalSyncController.extentAfter != 0) ||
           (delta > 0 &&
               horizontalController.extentBefore == 0 &&
-              horizontalSyncController.extentBefore != 0)) {
-        if (!horizontalSyncController.hasHold &&
-            !horizontalSyncController.hasDrag) {
-          horizontalSyncController.handleDragDown(null);
-          horizontalSyncController.handleDragStart(DragStartDetails(
+              outerHorizontalSyncController.extentBefore != 0)) {
+        if (!outerHorizontalSyncController.hasHold &&
+            !outerHorizontalSyncController.hasDrag) {
+          outerHorizontalSyncController.handleDragDown(null);
+          outerHorizontalSyncController.handleDragStart(DragStartDetails(
             globalPosition: details.globalPosition,
             localPosition: details.localPosition,
             sourceTimeStamp: details.sourceTimeStamp,
