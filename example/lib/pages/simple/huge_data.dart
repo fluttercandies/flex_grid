@@ -6,9 +6,9 @@ import 'package:flex_grid/flex_grid.dart';
 import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
 
 @FFRoute(
-  name: 'fluttercandies://BigDataDemo',
-  routeName: 'BigDataDemo',
-  description: 'BigDataDemo',
+  name: 'fluttercandies://HugeDataDemo',
+  routeName: 'HugeDataDemo',
+  description: 'HugeDataDemo',
   exts: <String, dynamic>{
     'group': 'Simple',
     'order': 2,

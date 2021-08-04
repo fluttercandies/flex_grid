@@ -27,7 +27,7 @@ class FlexGridSource extends LoadingMoreBase<GridRow> {
 
   @override
   Future<bool> loadData([bool isloadMoreAction = false]) async {
-    await Future<void>.delayed(const Duration(seconds: 0, milliseconds: 2000));
+    await Future<void>.delayed(const Duration(seconds: 2));
     _load();
     _pageIndex++;
     return true;

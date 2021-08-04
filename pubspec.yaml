@@ -1,8 +1,7 @@
 name: flex_grid
-description: A new Flutter package project.
-version: 0.1.0
-author:
-homepage:
+description: The FlexGrid control provides a powerful and quickly way to display data in a tabular format. It is including that frozened column/row,loading more, high performance and better experience in TabBarView/PageView.
+version: 0.1.0-non-null-safety  
+homepage: https://github.com/fluttercandies/flex_grid
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
@@ -11,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  loading_more_list: any  
-  extended_sliver: any  
-  extended_tabs: any
+  loading_more_list: ^4.0.1-non-null-safety  
+  extended_sliver: ^2.0.0-non-null-safety  
+  extended_tabs: ^2.3.0-non-null-safety
 dev_dependencies:
   flutter_test:
     sdk: flutter

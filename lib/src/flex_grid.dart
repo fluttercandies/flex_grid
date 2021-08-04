@@ -46,22 +46,34 @@ class FlexGrid<T> extends StatefulWidget {
   /// The count of columns, it should big than 0.
   final int columnsCount;
 
+  /// The builder to create cell
   final CellBuilder<T> cellBuilder;
-  final RowWrapper<T> rowWrapper;
+
+  /// The builder to create header
   final HeaderBuilder headerBuilder;
+
+  /// The data source of [FlexGrid]
   final LoadingMoreBase<T> source;
 
-  /// in the case : loadingmore sliverlist in NestedScrollView, you should rebuild CustomScrollView,
+  /// Decorate row widget in this call back.
+  final RowWrapper<T> rowWrapper;
+
+  /// In the case : loadingmore sliverlist in NestedScrollView, you should rebuild CustomScrollView,
   /// so that viewport can be computed again.
+  /// default is false
   final bool rebuildCustomScrollView;
 
-  final SyncControllerMixin horizontalController;
+  /// The [ScrollController] on vertical direction
   final ScrollController controller;
 
-  /// The Outer horizontalController, for example [ExtendedTabBarView]
-  ///
+  /// The controller for horizontal direction
+  final SyncControllerMixin horizontalController;
+
+  /// The Outer horizontalController, for example [ExtendedTabBarView] or [ExtendedPageView]
+  /// It make better experience when scroll on horizontal direction
   final SyncControllerMixin outerHorizontalSyncController;
 
+  /// The physics on both horizontal and vertical direction
   final ScrollPhysics physics;
 
   /// If true, forces the children to have the given extent(Cell height/width) in the scroll
@@ -76,10 +88,21 @@ class FlexGrid<T> extends StatefulWidget {
   /// cannot respond to input.
   //final Widget prototypeCell;
 
+  /// An immutable style describing how to create header
+  /// Default is [CellStyle.header()]
   final CellStyle headerStyle;
+
+  /// An immutable style describing how to create cell
+  /// Default is [CellStyle.cell()]
   final CellStyle cellStyle;
+
+  /// Widget builder for different loading state
   final LoadingMoreIndicatorBuilder indicatorBuilder;
+
+  /// A delegate that provides extensions within the [FlexGrid].
   final ExtendedListDelegate extendedListDelegate;
+
+  /// The builder to custom the headers of [FlexGrid]
   final HeadersBuilder headersBuilder;
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();

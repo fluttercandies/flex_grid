@@ -25,7 +25,7 @@ class BigData extends LoadingMoreBase<BigDataRow> {
 
   @override
   Future<bool> loadData([bool isloadMoreAction = false]) async {
-    await Future<void>.delayed(const Duration(seconds: 0, milliseconds: 200));
+    await Future<void>.delayed(const Duration(seconds: 2));
     _load();
     _pageIndex++;
     return true;

@@ -21,17 +21,6 @@ FFRouteSettings getRouteSettings({
   final Map<String, dynamic> safeArguments =
       arguments ?? const <String, dynamic>{};
   switch (name) {
-    case 'fluttercandies://BigDataDemo':
-      return FFRouteSettings(
-        name: name,
-        arguments: arguments,
-        widget: HugeDataDemo(
-          key: asT<Key>(safeArguments['key']),
-        ),
-        routeName: 'BigDataDemo',
-        description: 'BigDataDemo',
-        exts: <String, dynamic>{'group': 'Simple', 'order': 2},
-      );
     case 'fluttercandies://Excel':
       return FFRouteSettings(
         name: name,
@@ -55,6 +44,17 @@ FFRouteSettings getRouteSettings({
         routeName: 'FrozenedRowColumn',
         description: 'FrozenedRowColumn',
         exts: <String, dynamic>{'group': 'Simple', 'order': 0},
+      );
+    case 'fluttercandies://HugeDataDemo':
+      return FFRouteSettings(
+        name: name,
+        arguments: arguments,
+        widget: HugeDataDemo(
+          key: asT<Key>(safeArguments['key']),
+        ),
+        routeName: 'HugeDataDemo',
+        description: 'HugeDataDemo',
+        exts: <String, dynamic>{'group': 'Simple', 'order': 2},
       );
     case 'fluttercandies://StockList':
       return FFRouteSettings(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// An immutable style describing how to create header/cell
 class CellStyle {
   const CellStyle({
     this.alignment = Alignment.center,

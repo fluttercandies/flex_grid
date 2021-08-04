@@ -2,9 +2,9 @@
 
 [![pub package](https://img.shields.io/pub/v/flex_grid.svg)](https://pub.dartlang.org/packages/flex_grid) [![GitHub stars](https://img.shields.io/github/stars/fluttercandies/flex_grid)](https://github.com/fluttercandies/flex_grid/stargazers) [![GitHub forks](https://img.shields.io/github/forks/fluttercandies/flex_grid)](https://github.com/fluttercandies/flex_grid/network) [![GitHub license](https://img.shields.io/github/license/fluttercandies/flex_grid)](https://github.com/fluttercandies/flex_grid/blob/master/LICENSE) [![GitHub issues](https://img.shields.io/github/issues/fluttercandies/flex_grid)](https://github.com/fluttercandies/flex_grid/issues) <a target="_blank" href="https://jq.qq.com/?_wv=1027&k=5bcc0gy"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="flutter-candies" title="flutter-candies"></a>
 
-Language: English| [中文简体](README-ZH.md)
+Language: [English](README.md)| 中文简体
 
-The FlexGrid control provides a powerful and quickly way to display data in a tabular format. It is including that frozened column/row,loading more, high performance and better experience in TabBarView/PageView.
+FlexGrid 可以帮助快速创建表格形式的视图。它支持锁定行列，增量加载，提供高性能，拥有在 TabbarView/PageView 中更好的滚动体验。
 
 
 | |      |      |
@@ -15,31 +15,31 @@ The FlexGrid control provides a powerful and quickly way to display data in a ta
 
 
 
-|  parameter    |   description   |   default   |
+|  参数    |   描述   |   默认   |
 | ---- | ---- | ---- |
-|   frozenedColumnsCount   |   The count of forzened columns   |    0  |
-|   frozenedRowsCount   |   The count of forzened rows   |    0  |
-|   cellBuilder   |   The builder to create cell  |  required     |
-|   cellBuilder   |   The builder to create header  |  required     |
-|   columnsCount   |   The count of columns, it should big than 0   |   required   |
-|   [source](#source)   |  The data source of [FlexGrid]   |   required   |
-|   [rowWrapper](#rowWrapper)   |   decorate row widget in this call back   |   null   |
-|   rebuildCustomScrollView   |  rebuild when source is changed, It's from [LoadingMoreCustomScrollView]   |  false    |
-|   controller   |  The [ScrollController] on vertical direction    |   null   |
-|   horizontalController   |   The [SyncControllerMixin] for horizontal direction   |  null    |
-|   outerHorizontalSyncController   |   The Outer [SyncControllerMixin], for example [ExtendedTabBarView] or [ExtendedPageView]. It make better experience when scroll on horizontal direction   |   null   |
-|   physics   |   The physics on both horizontal and vertical direction   |   null   |
-|   highPerformance   |    If true, forces the children to have the given extent(Cell height/width) in the scroll direction.   |   false   |
-|   headerStyle   |     An immutable style describing how to create header |   CellStyle.header()   |
-|   cellStyle   |  An immutable style describing how to create cell    |  CellStyle.cell()     |
-|  indicatorBuilder    |  Widget builder for different loading state, it's from [LoadingMoreCustomScrollView]    |    null  |
-|   extendedListDelegate   |  A delegate that provides extensions, it's from [LoadingMoreCustomScrollView]    |   null   |
-|   [headersBuilder](#headersbuilder)   |   The builder to custom the headers of [FlexGrid]   |  null  |
+|   frozenedColumnsCount   |   锁定列的个数   |    0  |
+|   frozenedRowsCount   |   锁定行的个数   |    0  |
+|   cellBuilder   |   用于创建表格的回调  |  required     |
+|   headerBuilder   |   用于创建表头的回调  |  required     |
+|   columnsCount   |   列的个数，必须大于0   |   required   |
+|   [source](#source)   |  [FlexGrid] 的数据源   |   required   |
+|   [rowWrapper](#rowWrapper)   |   在这个回调里面用于装饰 row Widget   |   null   |
+|   rebuildCustomScrollView   |  当数据源改变的时候是否重新 build ， 它来自 [LoadingMoreCustomScrollView]   |  false    |
+|   controller   |  垂直方向的 [ScrollController]    |   null   |
+|   horizontalController   |   水平方向的 [SyncControllerMixin]   |  null    |
+|   outerHorizontalSyncController   |   外部的 [SyncControllerMixin], 用在 [ExtendedTabBarView] 或者 [ExtendedPageView] 上面，让水平方法的滚动更连续   |   null   |
+|   physics   |   水平和垂直方法的  [ScrollPhysics]  |   null   |
+|   highPerformance   |   如果为true的话,  将强制水平和垂直元素的大小，以提高滚动的性能  |   false   |
+|   headerStyle   |     样式用于来描述表头 |   CellStyle.header()   |
+|   cellStyle   |  样式用于来描述表格    |  CellStyle.cell()     |
+|  indicatorBuilder    |  用于创建不同加载状态的回调, 它来自  [LoadingMoreCustomScrollView]    |    null  |
+|   extendedListDelegate   |  用于设置一些扩展功能的设置, 它来自  [LoadingMoreCustomScrollView]    |   null   |
+|   [headersBuilder](#headersbuilder)   |   用于创建自定义的表头   |  null  |
 
 
 ## source
 
-[FlexGrid.source] is form [loading_more_list](https://github.com/fluttercandies/loading_more_list), LoadingMoreBase is data collection for loading more. override loadData method to load your data. set hasMore to false when it has no more data.
+[FlexGrid.source] 来自组件 [loading_more_list](https://github.com/fluttercandies/loading_more_list), 你需要继承LoadingMoreBase 来实现加载更多的数据源. 通过重写 loadData 方法来加载数据. 当没有数据的时候记得把 hasMore 设置为 false.
 
 ```dart
 class FlexGridSource extends LoadingMoreBase<GridRow> {
@@ -72,7 +72,7 @@ class FlexGridSource extends LoadingMoreBase<GridRow> {
 
 ## rowWrapper
 
-decorate row widget in this call back.
+在这个回调里面可以用于装饰每一行 Widget
 
 ``` dart
     FlexGrid(
@@ -95,7 +95,7 @@ decorate row widget in this call back.
 
 ## headersBuilder
 
-you can add anyother headers in this call back.
+用于创建自定义的表头
 
 ``` dart
     FlexGrid(
