@@ -59,9 +59,7 @@ mixin SyncControllerMixin on ScrollController {
 
   @override
   void dispose() {
-    for (final DragHoldController item in _positionToListener.values) {
-      item.forceCancel();
-    }
+    forceCancel();
     super.dispose();
   }
 

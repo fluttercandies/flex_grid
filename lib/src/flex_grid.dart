@@ -111,7 +111,6 @@ class FlexGrid<T> extends StatefulWidget {
 class _FlexGridState<T> extends State<FlexGrid<T>>
     with HorizontalSyncScrollMinxin {
   SyncControllerMixin _horizontalController;
-  SyncControllerMixin _outerHorizontalSyncController;
   ScrollBehavior _configuration;
   ScrollPhysics _physics;
   CellStyle _headerStyle;
@@ -121,7 +120,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
 
   @override
   SyncControllerMixin get outerHorizontalSyncController =>
-      _outerHorizontalSyncController;
+      widget.outerHorizontalSyncController;
 
   @override
   ScrollPhysics get physics => _physics;
@@ -131,7 +130,6 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
     super.initState();
     _horizontalController =
         widget.horizontalController ?? SyncScrollController();
-    _outerHorizontalSyncController = widget.outerHorizontalSyncController;
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
   }
@@ -153,7 +151,6 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
     _updatePosition();
-    _outerHorizontalSyncController = widget.horizontalController;
     initGestureRecognizers();
   }
 
