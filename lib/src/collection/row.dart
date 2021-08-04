@@ -1,3 +1,3 @@
 abstract class FlexGridRow {
-  List<Object> get columns;
+  List<Object?> get columns;
 }

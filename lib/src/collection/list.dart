@@ -18,4 +18,9 @@ mixin IList<T> on ListBase<T> {
   void operator []=(int index, T value) {
     _list[index] = value;
   }
+
+  @override
+  void add(T element) {
+    _list.add(element);
+  }
 }

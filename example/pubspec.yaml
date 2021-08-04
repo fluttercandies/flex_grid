@@ -19,12 +19,12 @@ version: 1.0.0+1
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
-  flutter: ">=1.22.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flex_grid:
     path: ../
-  ff_annotation_route_library: 2.0.2-non-null-safety
+  ff_annotation_route_library: any
   url_launcher: any  
   pull_to_refresh_notification: any  
   loading_more_list: any
@@ -35,7 +35,7 @@ dependencies:
   intl: any
   fl_chart: any
   flutter_rating_bar: any
-  extended_tabs: 2.3.0-non-null-safety
+  extended_tabs: any
   uuid: any
   timezone: any
   gbk2utf8: any

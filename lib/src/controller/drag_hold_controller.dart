@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 class DragHoldController {
   DragHoldController(this.position);
   final ScrollPosition position;
-  Drag _drag;
+  Drag? _drag;
 
-  ScrollHoldController _hold;
+  ScrollHoldController? _hold;
 
-  void handleDragDown(DragDownDetails details) {
+  void handleDragDown(DragDownDetails? details) {
     assert(_drag == null);
     assert(_hold == null);
     _hold = position.hold(_disposeHold);

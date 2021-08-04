@@ -11,10 +11,10 @@ import 'typedef.dart';
 
 class FlexGrid<T> extends StatefulWidget {
   const FlexGrid({
-    @required this.headerBuilder,
-    @required this.cellBuilder,
-    @required this.source,
-    @required this.columnsCount,
+    required this.headerBuilder,
+    required this.cellBuilder,
+    required this.source,
+    required this.columnsCount,
     this.frozenedColumnsCount = 0,
     this.frozenedRowsCount = 0,
     this.rebuildCustomScrollView = false,
@@ -30,9 +30,11 @@ class FlexGrid<T> extends StatefulWidget {
     this.indicatorBuilder,
     this.extendedListDelegate,
     this.headersBuilder,
-    Key key,
+    Key? key,
   })  : assert(columnsCount != 0),
+        // ignore: unnecessary_null_comparison
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
+        // ignore: unnecessary_null_comparison
         assert(frozenedRowsCount != null && frozenedRowsCount >= 0),
         assert(columnsCount - frozenedColumnsCount >= 0),
         super(key: key);
@@ -56,7 +58,7 @@ class FlexGrid<T> extends StatefulWidget {
   final LoadingMoreBase<T> source;
 
   /// Decorate row widget in this call back.
-  final RowWrapper<T> rowWrapper;
+  final RowWrapper<T>? rowWrapper;
 
   /// In the case : loadingmore sliverlist in NestedScrollView, you should rebuild CustomScrollView,
   /// so that viewport can be computed again.
@@ -64,17 +66,17 @@ class FlexGrid<T> extends StatefulWidget {
   final bool rebuildCustomScrollView;
 
   /// The [ScrollController] on vertical direction
-  final ScrollController controller;
+  final ScrollController? controller;
 
   /// The controller for horizontal direction
-  final SyncControllerMixin horizontalController;
+  final SyncControllerMixin? horizontalController;
 
   /// The Outer horizontalController, for example [ExtendedTabBarView] or [ExtendedPageView]
   /// It make better experience when scroll on horizontal direction
-  final SyncControllerMixin outerHorizontalSyncController;
+  final SyncControllerMixin? outerHorizontalSyncController;
 
   /// The physics on both horizontal and vertical direction
-  final ScrollPhysics physics;
+  final ScrollPhysics? physics;
 
   /// If true, forces the children to have the given extent(Cell height/width) in the scroll
   /// direction.
@@ -90,48 +92,46 @@ class FlexGrid<T> extends StatefulWidget {
 
   /// An immutable style describing how to create header
   /// Default is [CellStyle.header()]
-  final CellStyle headerStyle;
+  final CellStyle? headerStyle;
 
   /// An immutable style describing how to create cell
   /// Default is [CellStyle.cell()]
-  final CellStyle cellStyle;
+  final CellStyle? cellStyle;
 
   /// Widget builder for different loading state
-  final LoadingMoreIndicatorBuilder indicatorBuilder;
+  final LoadingMoreIndicatorBuilder? indicatorBuilder;
 
   /// A delegate that provides extensions within the [FlexGrid].
-  final ExtendedListDelegate extendedListDelegate;
+  final ExtendedListDelegate? extendedListDelegate;
 
   /// The builder to custom the headers of [FlexGrid]
-  final HeadersBuilder headersBuilder;
+  final HeadersBuilder? headersBuilder;
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
 
 class _FlexGridState<T> extends State<FlexGrid<T>>
     with HorizontalSyncScrollMinxin {
-  SyncControllerMixin _horizontalController;
-  SyncControllerMixin _outerHorizontalSyncController;
-  ScrollBehavior _configuration;
-  ScrollPhysics _physics;
-  CellStyle _headerStyle;
-  CellStyle _cellStyle;
+  SyncControllerMixin? _horizontalController;
+  late ScrollBehavior _configuration;
+  ScrollPhysics? _physics;
+  late CellStyle _headerStyle;
+  late CellStyle _cellStyle;
   @override
-  SyncControllerMixin get horizontalController => _horizontalController;
+  SyncControllerMixin? get horizontalController => _horizontalController;
 
   @override
-  SyncControllerMixin get outerHorizontalSyncController =>
-      _outerHorizontalSyncController;
+  SyncControllerMixin? get outerHorizontalSyncController =>
+      widget.outerHorizontalSyncController;
 
   @override
-  ScrollPhysics get physics => _physics;
+  ScrollPhysics? get physics => _physics;
 
   @override
   void initState() {
     super.initState();
     _horizontalController =
         widget.horizontalController ?? SyncScrollController();
-    _outerHorizontalSyncController = widget.outerHorizontalSyncController;
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
   }
@@ -153,7 +153,6 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
     _updatePosition();
-    _outerHorizontalSyncController = widget.horizontalController;
     initGestureRecognizers();
   }
 
@@ -162,7 +161,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
     _configuration = ScrollConfiguration.of(context);
     _physics = _configuration.getScrollPhysics(context);
     if (widget.physics != null) {
-      _physics = widget.physics.applyTo(_physics);
+      _physics = widget.physics!.applyTo(_physics);
     }
   }
 
@@ -223,7 +222,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
             controller: widget.controller,
             slivers: <Widget>[
               if (widget.headersBuilder != null)
-                ...widget.headersBuilder(context, header)
+                ...widget.headersBuilder!(context, header)
               else
                 header,
 
@@ -293,7 +292,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                               ),
                             );
                             if (widget.rowWrapper != null) {
-                              rowWidget = widget.rowWrapper(
+                              rowWidget = widget.rowWrapper!(
                                 context,
                                 t,
                                 row,
@@ -364,7 +363,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                     );
 
                     if (widget.rowWrapper != null) {
-                      rowWidget = widget.rowWrapper(
+                      rowWidget = widget.rowWrapper!(
                         context,
                         t,
                         row,

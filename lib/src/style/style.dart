@@ -51,7 +51,7 @@ class CellStyle {
   ///
   /// This padding is in addition to any padding inherent in the [decoration];
   /// see [Decoration.padding].
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// The color to paint behind the [child].
   ///
@@ -62,7 +62,7 @@ class CellStyle {
   /// If the [decoration] is used, this property must be null. A background
   /// color may still be painted by the [decoration] even if this property is
   /// null.
-  final Color color;
+  final Color? color;
 
   /// The decoration to paint behind the [child].
   ///
@@ -70,7 +70,7 @@ class CellStyle {
   ///
   /// The [child] is not clipped to the decoration. To clip a child to the shape
   /// of a particular [ShapeDecoration], consider using a [ClipPath] widget.
-  final Decoration decoration;
+  final Decoration? decoration;
 
   Widget apply(
     Widget child,

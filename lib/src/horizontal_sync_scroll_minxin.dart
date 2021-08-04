@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'controller/scroll_controller.dart';
 
 mixin HorizontalSyncScrollMinxin {
-  Map<Type, GestureRecognizerFactory> _gestureRecognizers;
-  Map<Type, GestureRecognizerFactory> get gestureRecognizers =>
+  Map<Type, GestureRecognizerFactory>? _gestureRecognizers;
+  Map<Type, GestureRecognizerFactory>? get gestureRecognizers =>
       _gestureRecognizers;
-  SyncControllerMixin get horizontalController;
-  SyncControllerMixin get outerHorizontalSyncController;
-  ScrollPhysics get physics;
+  SyncControllerMixin? get horizontalController;
+  SyncControllerMixin? get outerHorizontalSyncController;
+  ScrollPhysics? get physics;
 
   void initGestureRecognizers() {
     _gestureRecognizers = <Type, GestureRecognizerFactory>{
@@ -64,17 +64,17 @@ mixin HorizontalSyncScrollMinxin {
   void _handleDragUpdate(DragUpdateDetails details) {
     _handleTabView(details);
     if (outerHorizontalSyncController?.hasDrag ?? false) {
-      outerHorizontalSyncController.handleDragUpdate(details);
+      outerHorizontalSyncController!.handleDragUpdate(details);
     } else {
-      horizontalController.handleDragUpdate(details);
+      horizontalController!.handleDragUpdate(details);
     }
   }
 
   void _handleDragEnd(DragEndDetails details) {
     if (outerHorizontalSyncController?.hasDrag ?? false) {
-      outerHorizontalSyncController.handleDragEnd(details);
+      outerHorizontalSyncController!.handleDragEnd(details);
     } else {
-      horizontalController.handleDragEnd(details);
+      horizontalController!.handleDragEnd(details);
     }
   }
 
@@ -88,15 +88,15 @@ mixin HorizontalSyncScrollMinxin {
       final double delta = details.delta.dx;
 
       if ((delta < 0 &&
-              horizontalController.extentAfter == 0 &&
-              outerHorizontalSyncController.extentAfter != 0) ||
+              horizontalController!.extentAfter == 0 &&
+              outerHorizontalSyncController!.extentAfter != 0) ||
           (delta > 0 &&
-              horizontalController.extentBefore == 0 &&
-              outerHorizontalSyncController.extentBefore != 0)) {
-        if (!outerHorizontalSyncController.hasHold &&
-            !outerHorizontalSyncController.hasDrag) {
-          outerHorizontalSyncController.handleDragDown(null);
-          outerHorizontalSyncController.handleDragStart(DragStartDetails(
+              horizontalController!.extentBefore == 0 &&
+              outerHorizontalSyncController!.extentBefore != 0)) {
+        if (!outerHorizontalSyncController!.hasHold &&
+            !outerHorizontalSyncController!.hasDrag) {
+          outerHorizontalSyncController!.handleDragDown(null);
+          outerHorizontalSyncController!.handleDragStart(DragStartDetails(
             globalPosition: details.globalPosition,
             localPosition: details.localPosition,
             sourceTimeStamp: details.sourceTimeStamp,
@@ -110,9 +110,9 @@ mixin HorizontalSyncScrollMinxin {
     return false;
   }
 
-  RawGestureDetector buildGestureDetector({@required Widget child}) {
+  RawGestureDetector buildGestureDetector({required Widget child}) {
     return RawGestureDetector(
-      gestures: gestureRecognizers,
+      gestures: gestureRecognizers!,
       child: child,
     );
   }

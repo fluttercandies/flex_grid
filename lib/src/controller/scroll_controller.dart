@@ -8,7 +8,7 @@ class SyncScrollController extends ScrollController with SyncControllerMixin {
   SyncScrollController({
     double initialScrollOffset = 0.0,
     bool keepScrollOffset = true,
-    String debugLabel,
+    String? debugLabel,
   }) : super(
             initialScrollOffset: initialScrollOffset,
             keepScrollOffset: keepScrollOffset,
@@ -53,19 +53,17 @@ mixin SyncControllerMixin on ScrollController {
   void detach(ScrollPosition position) {
     super.detach(position);
     assert(_positionToListener.containsKey(position));
-    _positionToListener[position].forceCancel();
+    _positionToListener[position]!.forceCancel();
     _positionToListener.remove(position);
   }
 
   @override
   void dispose() {
-    for (final DragHoldController item in _positionToListener.values) {
-      item.forceCancel();
-    }
+    forceCancel();
     super.dispose();
   }
 
-  void handleDragDown(DragDownDetails details) {
+  void handleDragDown(DragDownDetails? details) {
     for (final DragHoldController item in _positionToListener.values) {
       item.handleDragDown(details);
     }
@@ -107,7 +105,7 @@ mixin SyncControllerMixin on ScrollController {
   double get extentBefore => _positionToListener.keys.isEmpty
       ? 0
       : _positionToListener.keys.first.extentBefore;
-  ScrollPosition get scrollPosition =>
+  ScrollPosition? get scrollPosition =>
       _positionToListener.keys.isEmpty ? null : _positionToListener.keys.first;
 
   bool get hasDrag => _positionToListener.values
