@@ -5,7 +5,7 @@ homepage: https://github.com/fluttercandies/flex_grid
 
 environment:
   sdk: ">=2.10.0 <3.0.0"
-  flutter: ">=1.22.0 <2.0.0"
+  flutter: ">=1.22.0"
 
 dependencies:
   flutter:
