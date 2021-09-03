@@ -19,27 +19,27 @@ mixin HorizontalSyncScrollMinxin {
         (HorizontalDragGestureRecognizer instance) {
           instance
             ..onDown = (DragDownDetails details) {
-              _handleDragDown(
+              handleDragDown(
                 details,
               );
             }
             ..onStart = (DragStartDetails details) {
-              _handleDragStart(
+              handleDragStart(
                 details,
               );
             }
             ..onUpdate = (DragUpdateDetails details) {
-              _handleDragUpdate(
+              handleDragUpdate(
                 details,
               );
             }
             ..onEnd = (DragEndDetails details) {
-              _handleDragEnd(
+              handleDragEnd(
                 details,
               );
             }
             ..onCancel = () {
-              _handleDragCancel();
+              handleDragCancel();
             }
             ..minFlingDistance = physics?.minFlingDistance
             ..minFlingVelocity = physics?.minFlingVelocity
@@ -49,7 +49,7 @@ mixin HorizontalSyncScrollMinxin {
     };
   }
 
-  void _handleDragDown(
+  void handleDragDown(
     DragDownDetails details,
   ) {
     outerHorizontalSyncController?.forceCancel();
@@ -57,12 +57,12 @@ mixin HorizontalSyncScrollMinxin {
     horizontalController?.handleDragDown(details);
   }
 
-  void _handleDragStart(DragStartDetails details) {
+  void handleDragStart(DragStartDetails details) {
     horizontalController?.handleDragStart(details);
   }
 
-  void _handleDragUpdate(DragUpdateDetails details) {
-    _handleTabView(details);
+  void handleDragUpdate(DragUpdateDetails details) {
+    handleTabView(details);
     if (outerHorizontalSyncController?.hasDrag ?? false) {
       outerHorizontalSyncController.handleDragUpdate(details);
     } else {
@@ -70,7 +70,7 @@ mixin HorizontalSyncScrollMinxin {
     }
   }
 
-  void _handleDragEnd(DragEndDetails details) {
+  void handleDragEnd(DragEndDetails details) {
     if (outerHorizontalSyncController?.hasDrag ?? false) {
       outerHorizontalSyncController.handleDragEnd(details);
     } else {
@@ -78,12 +78,12 @@ mixin HorizontalSyncScrollMinxin {
     }
   }
 
-  void _handleDragCancel() {
+  void handleDragCancel() {
     horizontalController?.handleDragCancel();
     outerHorizontalSyncController?.handleDragCancel();
   }
 
-  bool _handleTabView(DragUpdateDetails details) {
+  bool handleTabView(DragUpdateDetails details) {
     if (outerHorizontalSyncController != null) {
       final double delta = details.delta.dx;
 
