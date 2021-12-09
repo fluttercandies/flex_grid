@@ -24,7 +24,7 @@ environment:
 dependencies:
   flex_grid:
     path: ../
-  ff_annotation_route_library: any
+  ff_annotation_route_library: 3.0.0
   url_launcher: any  
   pull_to_refresh_notification: any  
   loading_more_list: any
