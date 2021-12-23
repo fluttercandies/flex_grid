@@ -1,3 +1,7 @@
+## 0.3.1
+
+* Fix indicatorBuilder is not working.
+
 ## 0.3.0
 
 * Public methods in HorizontalSyncScrollMinxin.

@@ -377,6 +377,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                       widget.source.length - widget.frozenedRowsCount,
                   //childCount: widget.list.length - widget.frozenedRowsCount,
                   extendedListDelegate: widget.extendedListDelegate,
+                  indicatorBuilder: widget.indicatorBuilder,
                 ),
               ),
             ],
