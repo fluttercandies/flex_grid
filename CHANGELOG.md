@@ -1,3 +1,7 @@
+## 1.0.0
+
+* BreakingChange: remove [FlexGrid.rebuildCustomScrollView]
+
 ## 0.3.1
 
 * Fix indicatorBuilder is not working.

@@ -17,7 +17,6 @@ class FlexGrid<T> extends StatefulWidget {
     required this.columnsCount,
     this.frozenedColumnsCount = 0,
     this.frozenedRowsCount = 0,
-    this.rebuildCustomScrollView = false,
     this.horizontalController,
     this.controller,
     this.physics,
@@ -59,11 +58,6 @@ class FlexGrid<T> extends StatefulWidget {
 
   /// Decorate row widget in this call back.
   final RowWrapper<T>? rowWrapper;
-
-  /// In the case : loadingmore sliverlist in NestedScrollView, you should rebuild CustomScrollView,
-  /// so that viewport can be computed again.
-  /// default is false
-  final bool rebuildCustomScrollView;
 
   /// The [ScrollController] on vertical direction
   final ScrollController? controller;
@@ -217,7 +211,6 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
           );
           return LoadingMoreCustomScrollView(
             scrollDirection: Axis.vertical,
-            rebuildCustomScrollView: widget.rebuildCustomScrollView,
             physics: widget.physics,
             controller: widget.controller,
             slivers: <Widget>[
