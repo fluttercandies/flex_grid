@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:example/data/stock_repository.dart';
 import 'package:example/widget/pull_to_refresh_header.dart';
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
-import 'package:flutter/material.dart';
 @FFArgumentImport()
 import 'package:flex_grid/flex_grid.dart';
+import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';

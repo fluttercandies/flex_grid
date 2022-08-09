@@ -35,6 +35,7 @@ FlexGrid 可以帮助快速创建表格形式的视图。它支持锁定行列�
 |  indicatorBuilder    |  用于创建不同加载状态的回调, 它来自  [LoadingMoreCustomScrollView]    |    null  |
 |   extendedListDelegate   |  用于设置一些扩展功能的设置, 它来自  [LoadingMoreCustomScrollView]    |   null   |
 |   [headersBuilder](#headersbuilder)   |   用于创建自定义的表头   |  null  |
+|   link   |  等设置为 true 的时候， [FlexGrid] 不能滚动，则会去滚动 parent [ExtendedTabView]   |  false  |
 
 
 ## source

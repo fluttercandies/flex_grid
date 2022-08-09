@@ -35,7 +35,7 @@ The FlexGrid control provides a powerful and quickly way to display data in a ta
 |  indicatorBuilder    |  Widget builder for different loading state, it's from [LoadingMoreCustomScrollView]    |    null  |
 |   extendedListDelegate   |  A delegate that provides extensions, it's from [LoadingMoreCustomScrollView]    |   null   |
 |   [headersBuilder](#headersbuilder)   |   The builder to custom the headers of [FlexGrid]   |  null  |
-
+|   link   |  if link is true, scroll parent [ExtendedTabView] when [FlexGrid] is over scroll   |  false  |
 
 ## source
 

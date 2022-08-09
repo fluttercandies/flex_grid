@@ -1,3 +1,9 @@
+## 2.0.0
+
+* Add [FlexGrid.link] to link with [ExtendedTabView] when [FlexGrid] is overscroll
+* BreakingChange: remove [FlexGrid.outerHorizontalSyncController]
+* Implements with SyncControllerMixin, SyncScrollStateMinxin [sync_scroll_library]
+
 ## 1.0.0
 
 * BreakingChange: remove [FlexGrid.rebuildCustomScrollView]

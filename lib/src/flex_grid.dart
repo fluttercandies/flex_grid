@@ -1,11 +1,10 @@
 import 'dart:math';
 
 import 'package:extended_sliver/extended_sliver.dart';
+import 'package:extended_tabs/extended_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
-import 'controller/scroll_controller.dart';
-import 'controller/scroll_physics.dart';
-import 'horizontal_sync_scroll_minxin.dart';
+
 import 'style/style.dart';
 import 'typedef.dart';
 
@@ -21,7 +20,6 @@ class FlexGrid<T> extends StatefulWidget {
     this.controller,
     this.physics,
     this.rowWrapper,
-    this.outerHorizontalSyncController,
     this.highPerformance = false,
     this.headerStyle,
     this.cellStyle,
@@ -30,6 +28,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.extendedListDelegate,
     this.headersBuilder,
     Key? key,
+    this.link = false,
   })  : assert(columnsCount != 0),
         // ignore: unnecessary_null_comparison
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
@@ -65,10 +64,6 @@ class FlexGrid<T> extends StatefulWidget {
   /// The controller for horizontal direction
   final SyncControllerMixin? horizontalController;
 
-  /// The Outer horizontalController, for example [ExtendedTabBarView] or [ExtendedPageView]
-  /// It make better experience when scroll on horizontal direction
-  final SyncControllerMixin? outerHorizontalSyncController;
-
   /// The physics on both horizontal and vertical direction
   final ScrollPhysics? physics;
 
@@ -100,26 +95,25 @@ class FlexGrid<T> extends StatefulWidget {
 
   /// The builder to custom the headers of [FlexGrid]
   final HeadersBuilder? headersBuilder;
+
+  /// if link is true and current over scroll,
+  /// it will check and scroll parent [ExtendedTabView].
+  /// default is false
+  final bool link;
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
 
 class _FlexGridState<T> extends State<FlexGrid<T>>
-    with HorizontalSyncScrollMinxin {
-  SyncControllerMixin? _horizontalController;
-  late ScrollBehavior _configuration;
-  ScrollPhysics? _physics;
+    with SyncScrollStateMinxin<FlexGrid<T>> {
+  late SyncControllerMixin _horizontalController;
   late CellStyle _headerStyle;
   late CellStyle _cellStyle;
   @override
-  SyncControllerMixin? get horizontalController => _horizontalController;
+  SyncControllerMixin get syncController => _horizontalController;
 
   @override
-  SyncControllerMixin? get outerHorizontalSyncController =>
-      widget.outerHorizontalSyncController;
-
-  @override
-  ScrollPhysics? get physics => _physics;
+  ScrollPhysics? get physics => widget.physics;
 
   @override
   void initState() {
@@ -132,30 +126,27 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
 
   @override
   void didChangeDependencies() {
+    _updateAncestor();
     super.didChangeDependencies();
-    _updatePosition();
-    initGestureRecognizers();
   }
 
   @override
   void didUpdateWidget(covariant FlexGrid<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.horizontalController != null &&
-        widget.horizontalController != oldWidget.horizontalController) {
-      _horizontalController = widget.horizontalController;
+    if (oldWidget.horizontalController != widget.horizontalController) {
+      _horizontalController =
+          widget.horizontalController ?? SyncScrollController();
     }
-    _headerStyle = widget.headerStyle ?? CellStyle.header();
-    _cellStyle = widget.cellStyle ?? CellStyle.cell();
-    _updatePosition();
+
+    _updateAncestor();
+    updatePhysics();
     initGestureRecognizers();
+    super.didUpdateWidget(oldWidget);
   }
 
-  // Only call this from places that will definitely trigger a rebuild.
-  void _updatePosition() {
-    _configuration = ScrollConfiguration.of(context);
-    _physics = _configuration.getScrollPhysics(context);
-    if (widget.physics != null) {
-      _physics = widget.physics!.applyTo(_physics);
+  void _updateAncestor() {
+    _horizontalController.unlinkParent();
+    if (widget.link) {
+      ExtendedTabBarView.linkParent(context, _horizontalController);
     }
   }
 
@@ -386,4 +377,10 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
             delegate: delegate, itemExtent: _cellStyle.width)
         : SliverList(delegate: delegate);
   }
+
+  @override
+  Axis get scrollDirection => Axis.horizontal;
+
+  @override
+  TextDirection? get textDirection => Directionality.maybeOf(context);
 }

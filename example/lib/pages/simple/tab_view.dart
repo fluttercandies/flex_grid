@@ -20,15 +20,15 @@ class TabView extends StatefulWidget {
   _TabViewState createState() => _TabViewState();
 }
 
-class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
+class _TabViewState extends State<TabView> with TickerProviderStateMixin {
   TabController controller;
-  SyncPageController _syncPageController;
+  TabController controller1;
   @override
   void initState() {
     super.initState();
-    const int index = 1;
-    controller = TabController(length: 3, vsync: this, initialIndex: index);
-    _syncPageController = SyncPageController(initialPage: index);
+    const int index = 0;
+    controller = TabController(length: 2, vsync: this, initialIndex: index);
+    controller1 = TabController(length: 3, vsync: this, initialIndex: index);
   }
 
   @override
@@ -39,29 +39,45 @@ class _TabViewState extends State<TabView> with SingleTickerProviderStateMixin {
           tabs: const <Widget>[
             Tab(text: 'Tab1'),
             Tab(text: 'Tab2'),
-            Tab(text: 'Tab3')
           ],
           controller: controller,
           labelColor: Colors.blue,
         ),
         Expanded(
           child: ExtendedTabBarView(
-            physics: const LessSpringClampingScrollPhysics(),
             controller: controller,
-            pageController: _syncPageController,
+            shouldIgnorePointerWhenScrolling: false,
             children: <Widget>[
-              Container(
-                color: Colors.yellow,
+              Column(
+                children: <Widget>[
+                  TabBar(
+                    tabs: const <Widget>[
+                      Tab(text: 'Tab11'),
+                      Tab(text: 'Tab12'),
+                      Tab(text: 'Tab13')
+                    ],
+                    controller: controller1,
+                    labelColor: Colors.blue,
+                  ),
+                  Expanded(
+                    child: ExtendedTabBarView(
+                      shouldIgnorePointerWhenScrolling: false,
+                      controller: controller1,
+                      children: const <Widget>[
+                        KeepAliveWidget(),
+                        KeepAliveWidget(),
+                        KeepAliveWidget(),
+                      ],
+                    ),
+                  )
+                ],
               ),
-              KeepAliveWidget(
-                syncPageController: _syncPageController,
-              ),
               Container(
-                color: Colors.blue,
+                color: Colors.red,
               ),
             ],
           ),
-        )
+        ),
       ],
     );
   }
@@ -79,8 +95,8 @@ class _KeepAliveWidgetState extends State<KeepAliveWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return FrozenedRowColumn(
-      syncPageController: widget.syncPageController,
+    return const FrozenedRowColumn(
+      link: true,
     );
   }
 

@@ -1,7 +1,7 @@
+import 'package:example/assets.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/services.dart';
 import 'package:loading_more_list/loading_more_list.dart';
-import 'package:example/assets.dart';
 
 class ExcelSource extends LoadingMoreBase<List<dynamic>> {
   Sheet _sheet;
