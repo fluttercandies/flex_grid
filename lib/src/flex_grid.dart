@@ -29,6 +29,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.headersBuilder,
     Key? key,
     this.link = false,
+    this.horizontalPhysics,
   })  : assert(columnsCount != 0),
         // ignore: unnecessary_null_comparison
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
@@ -64,7 +65,7 @@ class FlexGrid<T> extends StatefulWidget {
   /// The controller for horizontal direction
   final SyncControllerMixin? horizontalController;
 
-  /// The physics on both horizontal and vertical direction
+  /// The physics vertical direction
   final ScrollPhysics? physics;
 
   /// If true, forces the children to have the given extent(Cell height/width) in the scroll
@@ -100,6 +101,9 @@ class FlexGrid<T> extends StatefulWidget {
   /// it will check and scroll parent [ExtendedTabView].
   /// default is false
   final bool link;
+
+  /// The physics on both horizontal direction
+  final ScrollPhysics? horizontalPhysics;
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -113,7 +117,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
   SyncControllerMixin get syncController => _horizontalController;
 
   @override
-  ScrollPhysics? get physics => widget.physics;
+  ScrollPhysics? get physics => widget.horizontalPhysics;
 
   @override
   void initState() {
@@ -162,8 +166,9 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
               height: _headerStyle.height,
               child: CustomScrollView(
                 controller: _horizontalController,
-                physics: const NeverScrollableClampingScrollPhysics(),
+                physics: _defaultHorizontalScrollPhysics,
                 scrollDirection: Axis.horizontal,
+                scrollBehavior: _defaultHorizontalScrollBehavior,
                 slivers: <Widget>[
                   if (widget.frozenedColumnsCount > 0)
                     SliverPinnedToBoxAdapter(
@@ -231,9 +236,10 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                               height: _cellStyle.height,
                               child: CustomScrollView(
                                 controller: _horizontalController,
-                                physics:
-                                    const NeverScrollableClampingScrollPhysics(),
+                                physics: _defaultHorizontalScrollPhysics,
                                 scrollDirection: Axis.horizontal,
+                                scrollBehavior:
+                                    _defaultHorizontalScrollBehavior,
                                 slivers: <Widget>[
                                   if (widget.frozenedColumnsCount > 0)
                                     SliverPinnedToBoxAdapter(
@@ -304,8 +310,9 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                       height: _cellStyle.height,
                       child: CustomScrollView(
                         controller: _horizontalController,
-                        physics: const NeverScrollableClampingScrollPhysics(),
+                        physics: _defaultHorizontalScrollPhysics,
                         scrollDirection: Axis.horizontal,
+                        scrollBehavior: _defaultHorizontalScrollBehavior,
                         slivers: <Widget>[
                           if (widget.frozenedColumnsCount > 0)
                             SliverPinnedToBoxAdapter(
@@ -382,5 +389,24 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
   Axis get scrollDirection => Axis.horizontal;
 
   @override
-  TextDirection? get textDirection => Directionality.maybeOf(context);
+  ScrollPhysics? getScrollPhysics() {
+    final ScrollBehavior configuration = ScrollConfiguration.of(context);
+    ScrollPhysics temp = configuration.getScrollPhysics(context);
+    if (physics != null) {
+      temp = physics!.applyTo(temp);
+    }
+    return temp.applyTo(_defaultHorizontalScrollPhysics);
+  }
+}
+
+_ScrollBehavior _defaultHorizontalScrollBehavior = _ScrollBehavior();
+NeverScrollableScrollPhysics _defaultHorizontalScrollPhysics =
+    const NeverScrollableScrollPhysics();
+
+class _ScrollBehavior extends ScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(
+      BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
+  }
 }

@@ -49,6 +49,7 @@ class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
         cellStyle: style,
         headerStyle: style,
         columnsCount: GridRow.cloumnNames.length,
+        //horizontalPhysics: NeverScrollableScrollPhysics(),
         link: widget.link,
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder: (BuildContext context, GridRow data, int row, int column) {

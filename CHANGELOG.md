@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Change default horizontal physics to NeverScrollableScrollPhysics
+* Add [FlexGrid.horizontalPhysics]
+
 ## 2.0.0
 
 * Add [FlexGrid.link] to link with [ExtendedTabView] when [FlexGrid] is overscroll
