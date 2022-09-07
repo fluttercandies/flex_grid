@@ -29,7 +29,7 @@ The FlexGrid control provides a powerful and quickly way to display data in a ta
 |   horizontalController   |   The [SyncControllerMixin] for horizontal direction   |  null    |
 |   outerHorizontalSyncController   |   The Outer [SyncControllerMixin], for example [ExtendedTabBarView] or [ExtendedPageView]. It make better experience when scroll on horizontal direction   |   null   |
 |   physics   |   The physics on both horizontal and vertical direction   |   null   |
-|   highPerformance   |    If true, forces the children to have the given extent(Cell height/width) in the scroll direction.   |   false   |
+|   verticalHighPerformance/horizontalHighPerformance   |    If true, forces the children to have the given extent(Cell height/width) in the scroll direction.   |   false   |
 |   headerStyle   |     An immutable style describing how to create header |   CellStyle.header()   |
 |   cellStyle   |  An immutable style describing how to create cell    |  CellStyle.cell()     |
 |  indicatorBuilder    |  Widget builder for different loading state, it's from [LoadingMoreCustomScrollView]    |    null  |

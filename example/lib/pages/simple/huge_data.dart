@@ -44,7 +44,8 @@ class _HugeDataDemoState extends State<HugeDataDemo> {
             margin: const EdgeInsets.all(15),
             child: FlexGrid<BigDataRow>(
               frozenedColumnsCount: 1,
-              highPerformance: true,
+              verticalHighPerformance: true,
+              horizontalHighPerformance: true,
               columnsCount: BigDataRow.columnCount,
               physics: const AlwaysScrollableClampingScrollPhysics(),
               cellBuilder:

@@ -20,7 +20,6 @@ class FlexGrid<T> extends StatefulWidget {
     this.controller,
     this.physics,
     this.rowWrapper,
-    this.highPerformance = false,
     this.headerStyle,
     this.cellStyle,
     //this.prototypeCell,
@@ -30,6 +29,8 @@ class FlexGrid<T> extends StatefulWidget {
     Key? key,
     this.link = false,
     this.horizontalPhysics,
+    this.horizontalHighPerformance = false,
+    this.verticalHighPerformance = false,
   })  : assert(columnsCount != 0),
         // ignore: unnecessary_null_comparison
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
@@ -68,10 +69,6 @@ class FlexGrid<T> extends StatefulWidget {
   /// The physics vertical direction
   final ScrollPhysics? physics;
 
-  /// If true, forces the children to have the given extent(Cell height/width) in the scroll
-  /// direction.
-  final bool highPerformance;
-
   /// Defines the main axis extent of all of this sliver's children.
   ///
   /// The [prototypeCell] is laid out before the rest of the sliver's children
@@ -104,6 +101,14 @@ class FlexGrid<T> extends StatefulWidget {
 
   /// The physics on both horizontal direction
   final ScrollPhysics? horizontalPhysics;
+
+  /// If true, forces the horizontal children to have the given extent(Cell width) in the scroll
+  /// horizontal direction.
+  final bool horizontalHighPerformance;
+
+  /// If true, forces the vertical children to have the given extent(Cell height) in the scroll
+  /// vertical direction.
+  final bool verticalHighPerformance;
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -302,7 +307,8 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
               LoadingMoreSliverList<T>(
                 SliverListConfig<T>(
                   sourceList: widget.source,
-                  itemExtent: widget.highPerformance ? _cellStyle.height : null,
+                  itemExtent:
+                      widget.verticalHighPerformance ? _cellStyle.height : null,
                   itemBuilder: (BuildContext context, T data, int row) {
                     final T t = widget.source[row];
                     Widget rowWidget = SizedBox(
@@ -379,7 +385,7 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
   }
 
   Widget buildRow(SliverChildBuilderDelegate delegate) {
-    return widget.highPerformance
+    return widget.horizontalHighPerformance
         ? SliverFixedExtentList(
             delegate: delegate, itemExtent: _cellStyle.width)
         : SliverList(delegate: delegate);

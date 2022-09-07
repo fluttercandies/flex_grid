@@ -29,7 +29,7 @@ FlexGrid 可以帮助快速创建表格形式的视图。它支持锁定行列�
 |   horizontalController   |   水平方向的 [SyncControllerMixin]   |  null    |
 |   outerHorizontalSyncController   |   外部的 [SyncControllerMixin], 用在 [ExtendedTabBarView] 或者 [ExtendedPageView] 上面，让水平方法的滚动更连续   |   null   |
 |   physics   |   水平和垂直方法的  [ScrollPhysics]  |   null   |
-|   highPerformance   |   如果为true的话,  将强制水平和垂直元素的大小，以提高滚动的性能  |   false   |
+|   verticalHighPerformance/horizontalHighPerformance   |   如果为true的话,  将强制水平和垂直元素的大小，以提高滚动的性能  |   false   |
 |   headerStyle   |     样式用于来描述表头 |   CellStyle.header()   |
 |   cellStyle   |  样式用于来描述表格    |  CellStyle.cell()     |
 |  indicatorBuilder    |  用于创建不同加载状态的回调, 它来自  [LoadingMoreCustomScrollView]    |    null  |

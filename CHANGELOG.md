@@ -1,3 +1,7 @@
+## 3.0.0
+
+* Breaking Change: add horizontalHighPerformance and verticalHighPerformance instead of highPerformance
+
 ## 2.0.1
 
 * Change default horizontal physics to NeverScrollableScrollPhysics
@@ -6,7 +10,7 @@
 ## 2.0.0
 
 * Add [FlexGrid.link] to link with [ExtendedTabView] when [FlexGrid] is overscroll
-* BreakingChange: remove [FlexGrid.outerHorizontalSyncController]
+* Breaking Change: remove [FlexGrid.outerHorizontalSyncController]
 * Implements with SyncControllerMixin, SyncScrollStateMinxin [sync_scroll_library]
 
 ## 1.0.0

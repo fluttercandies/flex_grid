@@ -1,6 +1,6 @@
 name: flex_grid
 description: The FlexGrid control provides a powerful and quickly way to display data in a tabular format. It is including that frozened column/row,loading more, high performance and better experience in TabBarView/PageView.
-version: 2.0.1
+version: 3.0.0
 homepage: https://github.com/fluttercandies/flex_grid
 
 environment:
