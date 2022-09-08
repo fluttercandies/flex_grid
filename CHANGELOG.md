@@ -1,3 +1,8 @@
+## 3.0.1
+
+* add cell height limit for rowWrapper callback
+* fix cellstyle and headerstyle not working after they are changed
+
 ## 3.0.0
 
 * Breaking Change: add horizontalHighPerformance and verticalHighPerformance instead of highPerformance

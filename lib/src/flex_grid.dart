@@ -145,7 +145,8 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
       _horizontalController =
           widget.horizontalController ?? SyncScrollController();
     }
-
+    _headerStyle = widget.headerStyle ?? CellStyle.header();
+    _cellStyle = widget.cellStyle ?? CellStyle.cell();
     _updateAncestor();
     updatePhysics();
     initGestureRecognizers();
@@ -236,55 +237,49 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                           min(widget.frozenedRowsCount, widget.source.length),
                           (int row) {
                             final T t = widget.source[row];
-                            Widget rowWidget = SizedBox(
-                              width: boxConstraints.maxWidth,
-                              height: _cellStyle.height,
-                              child: CustomScrollView(
-                                controller: _horizontalController,
-                                physics: _defaultHorizontalScrollPhysics,
-                                scrollDirection: Axis.horizontal,
-                                scrollBehavior:
-                                    _defaultHorizontalScrollBehavior,
-                                slivers: <Widget>[
-                                  if (widget.frozenedColumnsCount > 0)
-                                    SliverPinnedToBoxAdapter(
-                                      child: Row(
-                                        children: List<Widget>.generate(
-                                          widget.frozenedColumnsCount,
-                                          (int column) => _cellStyle.apply(
-                                            widget.cellBuilder(
-                                              context,
-                                              t,
-                                              row,
-                                              column,
-                                            ),
-                                            row,
-                                            column,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  buildRow(
-                                    SliverChildBuilderDelegate(
-                                      (BuildContext context, int column) {
-                                        return _cellStyle.apply(
+                            Widget rowWidget = CustomScrollView(
+                              controller: _horizontalController,
+                              physics: _defaultHorizontalScrollPhysics,
+                              scrollDirection: Axis.horizontal,
+                              scrollBehavior: _defaultHorizontalScrollBehavior,
+                              slivers: <Widget>[
+                                if (widget.frozenedColumnsCount > 0)
+                                  SliverPinnedToBoxAdapter(
+                                    child: Row(
+                                      children: List<Widget>.generate(
+                                        widget.frozenedColumnsCount,
+                                        (int column) => _cellStyle.apply(
                                           widget.cellBuilder(
                                             context,
                                             t,
                                             row,
-                                            column +
-                                                widget.frozenedColumnsCount,
+                                            column,
                                           ),
                                           row,
-                                          column + widget.frozenedColumnsCount,
-                                        );
-                                      },
-                                      childCount: widget.columnsCount -
-                                          widget.frozenedColumnsCount,
+                                          column,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                buildRow(
+                                  SliverChildBuilderDelegate(
+                                    (BuildContext context, int column) {
+                                      return _cellStyle.apply(
+                                        widget.cellBuilder(
+                                          context,
+                                          t,
+                                          row,
+                                          column + widget.frozenedColumnsCount,
+                                        ),
+                                        row,
+                                        column + widget.frozenedColumnsCount,
+                                      );
+                                    },
+                                    childCount: widget.columnsCount -
+                                        widget.frozenedColumnsCount,
+                                  ),
+                                ),
+                              ],
                             );
                             if (widget.rowWrapper != null) {
                               rowWidget = widget.rowWrapper!(
@@ -294,6 +289,12 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                                 rowWidget,
                               );
                             }
+
+                            rowWidget = SizedBox(
+                              width: boxConstraints.maxWidth,
+                              height: _cellStyle.height,
+                              child: rowWidget,
+                            );
 
                             return rowWidget;
                           },
@@ -311,52 +312,48 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                       widget.verticalHighPerformance ? _cellStyle.height : null,
                   itemBuilder: (BuildContext context, T data, int row) {
                     final T t = widget.source[row];
-                    Widget rowWidget = SizedBox(
-                      width: boxConstraints.maxWidth,
-                      height: _cellStyle.height,
-                      child: CustomScrollView(
-                        controller: _horizontalController,
-                        physics: _defaultHorizontalScrollPhysics,
-                        scrollDirection: Axis.horizontal,
-                        scrollBehavior: _defaultHorizontalScrollBehavior,
-                        slivers: <Widget>[
-                          if (widget.frozenedColumnsCount > 0)
-                            SliverPinnedToBoxAdapter(
-                              child: Row(
-                                children: List<Widget>.generate(
-                                  widget.frozenedColumnsCount,
-                                  (int column) => _cellStyle.apply(
-                                    widget.cellBuilder(
-                                      context,
-                                      widget.source[
-                                          row + widget.frozenedRowsCount],
-                                      row + widget.frozenedRowsCount,
-                                      column,
-                                    ),
+                    Widget rowWidget = CustomScrollView(
+                      controller: _horizontalController,
+                      physics: _defaultHorizontalScrollPhysics,
+                      scrollDirection: Axis.horizontal,
+                      scrollBehavior: _defaultHorizontalScrollBehavior,
+                      slivers: <Widget>[
+                        if (widget.frozenedColumnsCount > 0)
+                          SliverPinnedToBoxAdapter(
+                            child: Row(
+                              children: List<Widget>.generate(
+                                widget.frozenedColumnsCount,
+                                (int column) => _cellStyle.apply(
+                                  widget.cellBuilder(
+                                    context,
+                                    widget
+                                        .source[row + widget.frozenedRowsCount],
                                     row + widget.frozenedRowsCount,
                                     column,
                                   ),
+                                  row + widget.frozenedRowsCount,
+                                  column,
                                 ),
                               ),
                             ),
-                          buildRow(SliverChildBuilderDelegate(
-                            (BuildContext context, int column) {
-                              return _cellStyle.apply(
-                                widget.cellBuilder(
-                                  context,
-                                  widget.source[row + widget.frozenedRowsCount],
-                                  row + widget.frozenedRowsCount,
-                                  column + widget.frozenedColumnsCount,
-                                ),
+                          ),
+                        buildRow(SliverChildBuilderDelegate(
+                          (BuildContext context, int column) {
+                            return _cellStyle.apply(
+                              widget.cellBuilder(
+                                context,
+                                widget.source[row + widget.frozenedRowsCount],
                                 row + widget.frozenedRowsCount,
                                 column + widget.frozenedColumnsCount,
-                              );
-                            },
-                            childCount: widget.columnsCount -
-                                widget.frozenedColumnsCount,
-                          )),
-                        ],
-                      ),
+                              ),
+                              row + widget.frozenedRowsCount,
+                              column + widget.frozenedColumnsCount,
+                            );
+                          },
+                          childCount:
+                              widget.columnsCount - widget.frozenedColumnsCount,
+                        )),
+                      ],
                     );
 
                     if (widget.rowWrapper != null) {
@@ -367,6 +364,12 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                         rowWidget,
                       );
                     }
+
+                    rowWidget = SizedBox(
+                      width: boxConstraints.maxWidth,
+                      height: _cellStyle.height,
+                      child: rowWidget,
+                    );
 
                     return rowWidget;
                   },
