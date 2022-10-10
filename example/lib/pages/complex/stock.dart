@@ -243,10 +243,19 @@ class StockCellStyle extends CellStyle {
       {CellStyleType type = CellStyleType.cell}) {
     return Container(
       child: child,
-      width: width,
-      height: height,
+      width: getWidth(column: column),
+      height: getHeight(row: row),
       alignment: alignment,
       color: Colors.white,
     );
+  }
+
+  @override
+  double getHeight({int row}) {
+    // you can custom height for one row
+    // if (row == 0) {
+    //   return 200;
+    // }
+    return super.getHeight(row: row);
   }
 }

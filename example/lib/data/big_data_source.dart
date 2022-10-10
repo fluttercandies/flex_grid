@@ -15,7 +15,7 @@ class BigData extends LoadingMoreBase<BigDataRow> {
   int _pageIndex = 0;
 
   void _load() {
-    for (int i = 0; i < 15; i++) {
+    for (int i = 0; i < 100; i++) {
       add(BigDataRow(name: 'index:$_pageIndex-$i'));
     }
   }

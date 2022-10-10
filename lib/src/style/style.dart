@@ -84,10 +84,13 @@ class CellStyle {
       padding: padding,
       decoration: decoration,
       alignment: alignment,
-      height: height,
-      width: width,
+      height: getHeight(row: row),
+      width: getWidth(column: column),
     );
   }
+
+  double getHeight({required int row}) => height;
+  double getWidth({required int column}) => width;
 }
 
 enum CellStyleType {

@@ -11,6 +11,12 @@ typedef RowWrapper<T> = Widget Function(
   BuildContext context,
   T data,
   int row,
+//  SizedBox(
+//     width: boxConstraints.maxWidth,
+//     height: _cellStyle.height,
+//     child: CustomScrollView(scrollDirection: Axis.horizontal,),
+//   )
+// child must has height
   Widget child,
 );
 

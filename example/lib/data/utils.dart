@@ -114,8 +114,8 @@ class MyCellStyle extends CellStyle {
         ),
       ),
       alignment: alignment,
-      height: height,
-      width: width,
+      width: getWidth(column: column),
+      height: getHeight(row: row),
     );
   }
 }

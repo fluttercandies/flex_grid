@@ -272,6 +272,13 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                                 ),
                               ],
                             );
+
+                            rowWidget = SizedBox(
+                              width: boxConstraints.maxWidth,
+                              height: _cellStyle.getHeight(row: row),
+                              child: rowWidget,
+                            );
+
                             if (widget.rowWrapper != null) {
                               rowWidget = widget.rowWrapper!(
                                 context,
@@ -280,12 +287,6 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                                 rowWidget,
                               );
                             }
-
-                            rowWidget = SizedBox(
-                              width: boxConstraints.maxWidth,
-                              height: _cellStyle.height,
-                              child: rowWidget,
-                            );
 
                             return rowWidget;
                           },
@@ -347,6 +348,12 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                       ],
                     );
 
+                    rowWidget = SizedBox(
+                      width: boxConstraints.maxWidth,
+                      height: _cellStyle.getHeight(row: row),
+                      child: rowWidget,
+                    );
+
                     if (widget.rowWrapper != null) {
                       rowWidget = widget.rowWrapper!(
                         context,
@@ -355,11 +362,6 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                         rowWidget,
                       );
                     }
-                    rowWidget = SizedBox(
-                      width: boxConstraints.maxWidth,
-                      height: _cellStyle.height,
-                      child: rowWidget,
-                    );
 
                     return rowWidget;
                   },
