@@ -9,16 +9,16 @@ environment:
 
 dependencies:
   extended_sliver: ^2.0.0
-  extended_tabs: ^4.0.0
+  extended_tabs: ^4.0.1
   flutter:
     sdk: flutter
   loading_more_list: ^5.0.0
-  sync_scroll_library: ^1.0.0
+  sync_scroll_library: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
 dependency_overrides:
-   
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

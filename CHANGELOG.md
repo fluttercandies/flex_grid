@@ -3,6 +3,7 @@
 * refactor code (sync_scroll_library)
 * breaking change: SyncPageController to LinkPageController
 * add getHeight and getWidth for [CellStyle] to override height and width base on row/column
+* fix simulation scroll is not sync (sync_scroll_library)
 
 ## 3.0.1
 
