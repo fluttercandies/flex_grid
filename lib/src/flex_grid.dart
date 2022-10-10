@@ -64,7 +64,7 @@ class FlexGrid<T> extends StatefulWidget {
   final ScrollController? controller;
 
   /// The controller for horizontal direction
-  final SyncControllerMixin? horizontalController;
+  final LinkScrollController? horizontalController;
 
   /// The physics vertical direction
   final ScrollPhysics? physics;
@@ -113,13 +113,10 @@ class FlexGrid<T> extends StatefulWidget {
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
 
-class _FlexGridState<T> extends State<FlexGrid<T>>
-    with SyncScrollStateMinxin<FlexGrid<T>> {
-  late SyncControllerMixin _horizontalController;
+class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
+  late LinkScrollControllerMixin _horizontalController;
   late CellStyle _headerStyle;
   late CellStyle _cellStyle;
-  @override
-  SyncControllerMixin get syncController => _horizontalController;
 
   @override
   ScrollPhysics? get physics => widget.horizontalPhysics;
@@ -128,36 +125,30 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
   void initState() {
     super.initState();
     _horizontalController =
-        widget.horizontalController ?? SyncScrollController();
+        widget.horizontalController ?? LinkScrollController();
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
-  }
-
-  @override
-  void didChangeDependencies() {
-    _updateAncestor();
-    super.didChangeDependencies();
   }
 
   @override
   void didUpdateWidget(covariant FlexGrid<T> oldWidget) {
     if (oldWidget.horizontalController != widget.horizontalController) {
       _horizontalController =
-          widget.horizontalController ?? SyncScrollController();
+          widget.horizontalController ?? LinkScrollController();
     }
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
-    _updateAncestor();
-    updatePhysics();
-    initGestureRecognizers();
+    if (widget.physics != oldWidget.physics) {
+      updatePhysics();
+      initGestureRecognizers();
+    }
+
     super.didUpdateWidget(oldWidget);
   }
 
-  void _updateAncestor() {
-    _horizontalController.unlinkParent();
-    if (widget.link) {
-      ExtendedTabBarView.linkParent(context, _horizontalController);
-    }
+  @override
+  void linkParent<S extends StatefulWidget, T extends LinkScrollState<S>>() {
+    super.linkParent<ExtendedTabBarView, ExtendedTabBarViewState>();
   }
 
   @override
@@ -364,7 +355,6 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
                         rowWidget,
                       );
                     }
-
                     rowWidget = SizedBox(
                       width: boxConstraints.maxWidth,
                       height: _cellStyle.height,
@@ -406,6 +396,12 @@ class _FlexGridState<T> extends State<FlexGrid<T>>
     }
     return temp.applyTo(_defaultHorizontalScrollPhysics);
   }
+
+  @override
+  LinkScrollControllerMixin get linkScrollController => _horizontalController;
+
+  @override
+  bool get link => widget.link;
 }
 
 _ScrollBehavior _defaultHorizontalScrollBehavior = _ScrollBehavior();

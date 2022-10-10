@@ -84,8 +84,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
 }
 
 class KeepAliveWidget extends StatefulWidget {
-  const KeepAliveWidget({Key key, this.syncPageController}) : super(key: key);
-  final SyncPageController syncPageController;
+  const KeepAliveWidget({Key key}) : super(key: key);
   @override
   _KeepAliveWidgetState createState() => _KeepAliveWidgetState();
 }

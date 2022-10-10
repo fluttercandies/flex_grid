@@ -37,7 +37,7 @@ class _StockListState extends State<StockList> {
   StockCellStyle cellStyle = StockCellStyle();
   final StreamController<bool> _showShaderontroller =
       StreamController<bool>.broadcast();
-  SyncScrollController horizontalController = SyncScrollController();
+  LinkScrollController horizontalController = LinkScrollController();
   bool _showShader = true;
   @override
   void initState() {

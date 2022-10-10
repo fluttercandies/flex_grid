@@ -1,3 +1,8 @@
+## 4.0.0
+
+* refactor code (sync_scroll_library)
+* breaking change: SyncPageController to LinkPageController
+
 ## 3.0.1
 
 * add cell height limit for rowWrapper callback
