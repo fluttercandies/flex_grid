@@ -46,10 +46,12 @@ class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
       child: FlexGrid<GridRow>(
         frozenedColumnsCount: style.frozenedColumnsCount,
         frozenedRowsCount: style.frozenedRowsCount,
+        frozenedTrailingColumnsCount: 1,
         cellStyle: style,
         headerStyle: style,
+        footerStyle: style,
         columnsCount: GridRow.cloumnNames.length,
-        //horizontalPhysics: NeverScrollableScrollPhysics(),
+        horizontalPhysics: const ClampingScrollPhysics(),
         link: widget.link,
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder: (BuildContext context, GridRow data, int row, int column) {
@@ -57,6 +59,9 @@ class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
         },
         headerBuilder: (BuildContext context, int index) {
           return Text(GridRow.cloumnNames[index]);
+        },
+        footerBuilder: (BuildContext context, int index) {
+          return Text(GridRow.footerNames[index]);
         },
         source: source,
       ),

@@ -74,20 +74,20 @@ class _StockListState extends State<StockList> {
               horizontalController: horizontalController,
               frozenedColumnsCount: source.frozenedColumnsCount,
               columnsCount: StockRepository.cloumnNames.length,
+              horizontalHighPerformance: true,
+              horizontalPhysics: const ClampingScrollPhysics(),
               cellStyle: cellStyle,
               headerStyle: cellStyle,
               headersBuilder: (BuildContext b, Widget header) {
                 return <Widget>[
                   header,
-                  SliverToBoxAdapter(
-                    child: PullToRefreshContainer(
-                        (PullToRefreshScrollNotificationInfo info) {
-                      return PullToRefreshHeader(
-                        info,
-                        source.lastRefreshTime,
-                      );
-                    }),
-                  ),
+                  PullToRefreshContainer(
+                      (PullToRefreshScrollNotificationInfo info) {
+                    return PullToRefreshHeader(
+                      info,
+                      source.lastRefreshTime,
+                    );
+                  }),
                 ];
               },
               physics: const AlwaysScrollableClampingScrollPhysics(),

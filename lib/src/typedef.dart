@@ -25,6 +25,11 @@ typedef HeaderBuilder = Widget Function(
   int index,
 );
 
+typedef FooterBuilder = Widget Function(
+  BuildContext context,
+  int index,
+);
+
 typedef HeadersBuilder = List<Widget> Function(
   BuildContext context,
   Widget header,

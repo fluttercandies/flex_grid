@@ -94,7 +94,10 @@ class MyCellStyle extends CellStyle {
             ? Colors.purple
             : (column < frozenedColumnsCount ? Colors.yellow : Colors.white);
         break;
-
+      case CellStyleType.footer:
+        backgroundColor =
+            column < frozenedColumnsCount ? Colors.yellow : Colors.lightGreen;
+        break;
       default:
         backgroundColor = Colors.white;
     }
@@ -105,9 +108,16 @@ class MyCellStyle extends CellStyle {
       decoration: BoxDecoration(
         color: backgroundColor,
         border: Border(
-          bottom: BorderSide(
-            color: Colors.grey.withOpacity(0.5),
-          ),
+          top: type == CellStyleType.footer
+              ? BorderSide(
+                  color: Colors.grey.withOpacity(0.5),
+                )
+              : BorderSide.none,
+          bottom: type != CellStyleType.footer
+              ? BorderSide(
+                  color: Colors.grey.withOpacity(0.5),
+                )
+              : BorderSide.none,
           right: BorderSide(
             color: Colors.grey.withOpacity(0.5),
           ),

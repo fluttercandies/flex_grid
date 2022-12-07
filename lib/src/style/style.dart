@@ -41,6 +41,20 @@ class CellStyle {
         ),
       );
 
+  factory CellStyle.footer() => CellStyle(
+        decoration: BoxDecoration(
+          color: Colors.lightGreen,
+          border: Border(
+            bottom: BorderSide(
+              color: Colors.grey.withOpacity(0.5),
+            ),
+            right: BorderSide(
+              color: Colors.grey.withOpacity(0.5),
+            ),
+          ),
+        ),
+      );
+
   final double height;
   final double width;
 
@@ -96,4 +110,5 @@ class CellStyle {
 enum CellStyleType {
   header,
   cell,
+  footer,
 }

@@ -11,6 +11,9 @@ class GridRow extends FlexGridRow {
 
   static List<String> cloumnNames = List<String>.generate(
       15, (int index) => index == 0 ? 'ID' : 'Header:$index');
+
+  static List<String> footerNames = List<String>.generate(
+      15, (int index) => index == 0 ? 'ID' : 'Footer:$index');
 }
 
 class FlexGridSource extends LoadingMoreBase<GridRow> {

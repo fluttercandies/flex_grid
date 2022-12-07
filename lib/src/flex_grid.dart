@@ -1,6 +1,7 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:math';
 
-import 'package:extended_sliver/extended_sliver.dart';
 import 'package:extended_tabs/extended_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
@@ -10,7 +11,7 @@ import 'typedef.dart';
 
 class FlexGrid<T> extends StatefulWidget {
   const FlexGrid({
-    required this.headerBuilder,
+    this.headerBuilder,
     required this.cellBuilder,
     required this.source,
     required this.columnsCount,
@@ -31,18 +32,28 @@ class FlexGrid<T> extends StatefulWidget {
     this.horizontalPhysics,
     this.horizontalHighPerformance = false,
     this.verticalHighPerformance = false,
+    this.showGlowLeading = false,
+    this.showGlowTrailing = true,
+    this.frozenedTrailingColumnsCount = 0,
+    this.showHorizontalGlowLeading = false,
+    this.showHorizontalGlowTrailing = false,
+    this.footerBuilder,
+    this.footerStyle,
   })  : assert(columnsCount != 0),
-        // ignore: unnecessary_null_comparison
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
-        // ignore: unnecessary_null_comparison
         assert(frozenedRowsCount != null && frozenedRowsCount >= 0),
-        assert(columnsCount - frozenedColumnsCount >= 0),
+        assert(frozenedTrailingColumnsCount != null &&
+            frozenedTrailingColumnsCount >= 0),
+        assert(columnsCount -
+                frozenedColumnsCount -
+                frozenedTrailingColumnsCount >=
+            0),
         super(key: key);
 
-  /// The count of forzened columns
+  /// The count of forzened columns at leading
   final int frozenedColumnsCount;
 
-  /// The count of forzened rows
+  /// The count of forzened rows at leading
   final int frozenedRowsCount;
 
   /// The count of columns, it should big than 0.
@@ -52,7 +63,7 @@ class FlexGrid<T> extends StatefulWidget {
   final CellBuilder<T> cellBuilder;
 
   /// The builder to create header
-  final HeaderBuilder headerBuilder;
+  final HeaderBuilder? headerBuilder;
 
   /// The data source of [FlexGrid]
   final LoadingMoreBase<T> source;
@@ -109,6 +120,33 @@ class FlexGrid<T> extends StatefulWidget {
   /// If true, forces the vertical children to have the given extent(Cell height) in the scroll
   /// vertical direction.
   final bool verticalHighPerformance;
+
+  /// Whether to show the overscroll glow on the side with negative scroll
+  /// offsets.
+  final bool showGlowLeading;
+
+  /// Whether to show the overscroll glow on the side with positive scroll
+  /// offsets.
+  final bool showGlowTrailing;
+
+  /// The count of forzened columns at trailing
+  final int frozenedTrailingColumnsCount;
+
+  /// Whether to show the overscroll glow on the side with negative scroll
+  /// offsets in horizontal.
+  final bool showHorizontalGlowLeading;
+
+  /// Whether to show the overscroll glow on the side with positive scroll
+  /// offsets in horizontal.
+  final bool showHorizontalGlowTrailing;
+
+  /// The builder to create footer
+  final FooterBuilder? footerBuilder;
+
+  /// An immutable style describing how to create footer
+  /// Default is [CellStyle.footer()]
+  final CellStyle? footerStyle;
+
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -117,7 +155,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
   late LinkScrollControllerMixin _horizontalController;
   late CellStyle _headerStyle;
   late CellStyle _cellStyle;
-
+  late CellStyle _footerStyle;
   @override
   ScrollPhysics? get physics => widget.horizontalPhysics;
 
@@ -128,6 +166,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
         widget.horizontalController ?? LinkScrollController();
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
+    _footerStyle = widget.footerStyle ?? CellStyle.footer();
   }
 
   @override
@@ -138,6 +177,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
     }
     _headerStyle = widget.headerStyle ?? CellStyle.header();
     _cellStyle = widget.cellStyle ?? CellStyle.cell();
+    _footerStyle = widget.footerStyle ?? CellStyle.footer();
     if (widget.physics != oldWidget.physics) {
       updatePhysics();
       initGestureRecognizers();
@@ -156,234 +196,229 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
     return buildGestureDetector(
       child: LayoutBuilder(
         builder: (BuildContext b, BoxConstraints boxConstraints) {
-          // headers
-          final Widget header = SliverPinnedToBoxAdapter(
-            child: SizedBox(
-              width: boxConstraints.maxWidth,
-              height: _headerStyle.height,
-              child: CustomScrollView(
-                controller: _horizontalController,
-                physics: _defaultHorizontalScrollPhysics,
-                scrollDirection: Axis.horizontal,
-                scrollBehavior: _defaultHorizontalScrollBehavior,
-                slivers: <Widget>[
-                  if (widget.frozenedColumnsCount > 0)
-                    SliverPinnedToBoxAdapter(
-                      child: Row(
-                        children: List<Widget>.generate(
-                          widget.frozenedColumnsCount,
-                          (int column) => _headerStyle.apply(
-                            widget.headerBuilder(context, column),
-                            0,
-                            column,
-                            type: CellStyleType.header,
-                          ),
-                        ),
-                      ),
-                    ),
-                  buildRow(
-                    SliverChildBuilderDelegate(
-                      (BuildContext context, int column) {
-                        return _headerStyle.apply(
-                          widget.headerBuilder(
-                            context,
-                            column + widget.frozenedColumnsCount,
-                          ),
-                          0,
-                          column + widget.frozenedColumnsCount,
-                          type: CellStyleType.header,
-                        );
-                      },
-                      childCount:
-                          widget.columnsCount - widget.frozenedColumnsCount,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-          return LoadingMoreCustomScrollView(
+          Widget list = LoadingMoreList<T>(ListConfig<T>(
+            sourceList: widget.source,
+            itemExtent:
+                widget.verticalHighPerformance ? _cellStyle.height : null,
+            itemBuilder: (BuildContext context, T data, int row) {
+              return _rowBuilder(
+                row,
+                context,
+                boxConstraints,
+                _cellStyle,
+                CellStyleType.cell,
+              );
+            },
+            itemCountBuilder: (int index) =>
+                widget.source.length - widget.frozenedRowsCount,
+            //childCount: widget.list.length - widget.frozenedRowsCount,
+            extendedListDelegate: widget.extendedListDelegate,
+            indicatorBuilder: widget.indicatorBuilder,
             scrollDirection: Axis.vertical,
             physics: widget.physics,
             controller: widget.controller,
-            slivers: <Widget>[
-              if (widget.headersBuilder != null)
-                ...widget.headersBuilder!(context, header)
-              else
-                header,
+            showGlowLeading: widget.showGlowLeading,
+            showGlowTrailing: widget.showGlowTrailing,
+          ));
 
+          if (widget.headerBuilder == null &&
+              widget.footerBuilder == null &&
+              widget.frozenedRowsCount <= 0) {
+            return list;
+          }
+
+          list = Column(
+            children: <Widget>[
+              if (widget.headersBuilder != null && widget.headerBuilder != null)
+                ...widget.headersBuilder!(
+                  context,
+                  _rowBuilder(
+                    0,
+                    context,
+                    boxConstraints,
+                    _headerStyle,
+                    CellStyleType.header,
+                  ),
+                )
+              else if (widget.headerBuilder != null)
+                _rowBuilder(
+                  0,
+                  context,
+                  boxConstraints,
+                  _headerStyle,
+                  CellStyleType.header,
+                ),
               // frozened rows
               if (widget.frozenedRowsCount > 0)
-                SliverPinnedToBoxAdapter(
-                  child: StreamBuilder<LoadingMoreBase<T>>(
-                    stream: widget.source.rebuild,
-                    initialData: widget.source,
-                    builder: (BuildContext b,
-                        AsyncSnapshot<LoadingMoreBase<T>> asyncSnapshot) {
-                      if (widget.source.isEmpty) {
-                        return Container();
-                      }
-                      return Column(
-                        children: List<Widget>.generate(
-                          min(widget.frozenedRowsCount, widget.source.length),
-                          (int row) {
-                            final T t = widget.source[row];
-                            Widget rowWidget = CustomScrollView(
-                              controller: _horizontalController,
-                              physics: _defaultHorizontalScrollPhysics,
-                              scrollDirection: Axis.horizontal,
-                              scrollBehavior: _defaultHorizontalScrollBehavior,
-                              slivers: <Widget>[
-                                if (widget.frozenedColumnsCount > 0)
-                                  SliverPinnedToBoxAdapter(
-                                    child: Row(
-                                      children: List<Widget>.generate(
-                                        widget.frozenedColumnsCount,
-                                        (int column) => _cellStyle.apply(
-                                          widget.cellBuilder(
-                                            context,
-                                            t,
-                                            row,
-                                            column,
-                                          ),
-                                          row,
-                                          column,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                buildRow(
-                                  SliverChildBuilderDelegate(
-                                    (BuildContext context, int column) {
-                                      return _cellStyle.apply(
-                                        widget.cellBuilder(
-                                          context,
-                                          t,
-                                          row,
-                                          column + widget.frozenedColumnsCount,
-                                        ),
-                                        row,
-                                        column + widget.frozenedColumnsCount,
-                                      );
-                                    },
-                                    childCount: widget.columnsCount -
-                                        widget.frozenedColumnsCount,
-                                  ),
-                                ),
-                              ],
-                            );
-
-                            rowWidget = SizedBox(
-                              width: boxConstraints.maxWidth,
-                              height: _cellStyle.getHeight(row: row),
-                              child: rowWidget,
-                            );
-
-                            if (widget.rowWrapper != null) {
-                              rowWidget = widget.rowWrapper!(
-                                context,
-                                t,
-                                row,
-                                rowWidget,
-                              );
-                            }
-
-                            return rowWidget;
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-              // cell
-              LoadingMoreSliverList<T>(
-                SliverListConfig<T>(
-                  sourceList: widget.source,
-                  itemExtent:
-                      widget.verticalHighPerformance ? _cellStyle.height : null,
-                  itemBuilder: (BuildContext context, T data, int row) {
-                    final T t = widget.source[row];
-                    Widget rowWidget = CustomScrollView(
-                      controller: _horizontalController,
-                      physics: _defaultHorizontalScrollPhysics,
-                      scrollDirection: Axis.horizontal,
-                      scrollBehavior: _defaultHorizontalScrollBehavior,
-                      slivers: <Widget>[
-                        if (widget.frozenedColumnsCount > 0)
-                          SliverPinnedToBoxAdapter(
-                            child: Row(
-                              children: List<Widget>.generate(
-                                widget.frozenedColumnsCount,
-                                (int column) => _cellStyle.apply(
-                                  widget.cellBuilder(
-                                    context,
-                                    widget
-                                        .source[row + widget.frozenedRowsCount],
-                                    row + widget.frozenedRowsCount,
-                                    column,
-                                  ),
-                                  row + widget.frozenedRowsCount,
-                                  column,
-                                ),
-                              ),
-                            ),
-                          ),
-                        buildRow(SliverChildBuilderDelegate(
-                          (BuildContext context, int column) {
-                            return _cellStyle.apply(
-                              widget.cellBuilder(
-                                context,
-                                widget.source[row + widget.frozenedRowsCount],
-                                row + widget.frozenedRowsCount,
-                                column + widget.frozenedColumnsCount,
-                              ),
-                              row + widget.frozenedRowsCount,
-                              column + widget.frozenedColumnsCount,
-                            );
-                          },
-                          childCount:
-                              widget.columnsCount - widget.frozenedColumnsCount,
-                        )),
-                      ],
-                    );
-
-                    rowWidget = SizedBox(
-                      width: boxConstraints.maxWidth,
-                      height: _cellStyle.getHeight(row: row),
-                      child: rowWidget,
-                    );
-
-                    if (widget.rowWrapper != null) {
-                      rowWidget = widget.rowWrapper!(
-                        context,
-                        t,
-                        row,
-                        rowWidget,
-                      );
+                StreamBuilder<LoadingMoreBase<T>>(
+                  stream: widget.source.rebuild,
+                  initialData: widget.source,
+                  builder: (BuildContext b,
+                      AsyncSnapshot<LoadingMoreBase<T>> asyncSnapshot) {
+                    if (widget.source.isEmpty) {
+                      return Container();
                     }
-
-                    return rowWidget;
+                    return Column(
+                      children: List<Widget>.generate(
+                        min(widget.frozenedRowsCount, widget.source.length),
+                        (int row) {
+                          return _rowBuilder(
+                            row,
+                            context,
+                            boxConstraints,
+                            _cellStyle,
+                            CellStyleType.cell,
+                          );
+                        },
+                      ),
+                    );
                   },
-                  childCountBuilder: (int index) =>
-                      widget.source.length - widget.frozenedRowsCount,
-                  //childCount: widget.list.length - widget.frozenedRowsCount,
-                  extendedListDelegate: widget.extendedListDelegate,
-                  indicatorBuilder: widget.indicatorBuilder,
                 ),
-              ),
+
+              Expanded(child: list),
+              if (widget.footerBuilder != null)
+                _rowBuilder(
+                  0,
+                  context,
+                  boxConstraints,
+                  _footerStyle,
+                  CellStyleType.footer,
+                ),
             ],
           );
+
+          return list;
         },
       ),
     );
   }
 
-  Widget buildRow(SliverChildBuilderDelegate delegate) {
-    return widget.horizontalHighPerformance
-        ? SliverFixedExtentList(
-            delegate: delegate, itemExtent: _cellStyle.width)
-        : SliverList(delegate: delegate);
+  Widget _rowBuilder(
+    int row,
+    BuildContext context,
+    BoxConstraints boxConstraints,
+    CellStyle style,
+    CellStyleType type,
+  ) {
+    row = row + widget.frozenedRowsCount;
+    Widget rowWidget = GlowNotificationWidget(
+      ListView.builder(
+        padding: EdgeInsets.zero,
+        itemBuilder: (BuildContext context, int column) {
+          column = column + widget.frozenedColumnsCount;
+          return _buildContent(
+            style,
+            type,
+            context,
+            row,
+            column,
+          );
+        },
+        controller: _horizontalController,
+        physics:
+            _defaultHorizontalScrollPhysics.applyTo(widget.horizontalPhysics),
+        scrollDirection: Axis.horizontal,
+        itemCount: widget.columnsCount - widget.frozenedColumnsCount,
+        itemExtent: widget.horizontalHighPerformance ? style.width : null,
+        //scrollBehavior: _defaultHorizontalScrollBehavior,
+      ),
+      showGlowLeading: widget.showHorizontalGlowLeading,
+      showGlowTrailing: widget.showHorizontalGlowTrailing,
+    );
+
+    if (widget.frozenedColumnsCount > 0 ||
+        widget.frozenedTrailingColumnsCount > 0) {
+      rowWidget = Row(
+        children: <Widget>[
+          ...List<Widget>.generate(
+            widget.frozenedColumnsCount,
+            (int column) {
+              return _buildContent(
+                style,
+                type,
+                context,
+                row,
+                column,
+              );
+            },
+          ),
+          Expanded(child: rowWidget),
+          ...List<Widget>.generate(widget.frozenedTrailingColumnsCount,
+              (int column) {
+            return _buildContent(
+              style,
+              type,
+              context,
+              row,
+              widget.columnsCount -
+                  widget.frozenedTrailingColumnsCount +
+                  column,
+            );
+          }),
+        ],
+      );
+    }
+
+    rowWidget = SizedBox(
+      width: boxConstraints.maxWidth,
+      height: style.getHeight(row: row),
+      child: rowWidget,
+    );
+
+    if (type == CellStyleType.cell && widget.rowWrapper != null) {
+      rowWidget = widget.rowWrapper!(
+        context,
+        widget.source[row],
+        row,
+        rowWidget,
+      );
+    }
+
+    // if (type == CellStyleType.header) {
+    //   rowWidget = SliverPinnedToBoxAdapter(
+    //     child: rowWidget,
+    //   );
+    // }
+    return rowWidget;
+  }
+
+  Widget _buildContent(
+    CellStyle style,
+    CellStyleType type,
+    BuildContext context,
+    int row,
+    int column,
+  ) {
+    Widget? content;
+    switch (type) {
+      case CellStyleType.cell:
+        content = widget.cellBuilder(
+          context,
+          widget.source[row],
+          row,
+          column,
+        );
+        break;
+      case CellStyleType.header:
+        content = widget.headerBuilder?.call(
+          context,
+          column,
+        );
+        break;
+      case CellStyleType.footer:
+        content = widget.footerBuilder?.call(
+          context,
+          column,
+        );
+        break;
+      default:
+    }
+    return style.apply(
+      content ?? Container(),
+      row,
+      column,
+      type: type,
+    );
   }
 
   @override
@@ -406,14 +441,5 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
   bool get link => widget.link;
 }
 
-_ScrollBehavior _defaultHorizontalScrollBehavior = _ScrollBehavior();
 NeverScrollableScrollPhysics _defaultHorizontalScrollPhysics =
     const NeverScrollableScrollPhysics();
-
-class _ScrollBehavior extends ScrollBehavior {
-  @override
-  Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
-  }
-}

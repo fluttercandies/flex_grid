@@ -59,6 +59,8 @@ class _ExcelDemoState extends State<ExcelDemo> {
         headerStyle: ExcelCellStyle(),
         cellStyle: ExcelCellStyle(),
         physics: const AlwaysScrollableClampingScrollPhysics(),
+        horizontalHighPerformance: true,
+        verticalHighPerformance: true,
         cellBuilder:
             (BuildContext context, List<dynamic> data, int row, int column) {
           String showText = data[column].toString();
