@@ -1,6 +1,7 @@
 ## 5.0.0
 
-* Breaking Change: headersBuilder are not require a list of sliver now.
+* Breaking Change: headersBuilder are not require a list of slivers now.
+* add sliverHeadersBuilder to build sliver headers.
 * add frozenedTrailingColumnsCount to support frozen column at the end of this row
 * add showGlowLeading/showGlowTrailing/showHorizontalGlowLeading/showHorizontalGlowTrailing to control whether show the overscroll glow.
 * add footerBuilder/footerStyle

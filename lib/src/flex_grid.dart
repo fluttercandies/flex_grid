@@ -39,6 +39,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.showHorizontalGlowTrailing = false,
     this.footerBuilder,
     this.footerStyle,
+    this.sliverHeadersBuilder,
   })  : assert(columnsCount != 0),
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
         assert(frozenedRowsCount != null && frozenedRowsCount >= 0),
@@ -147,6 +148,9 @@ class FlexGrid<T> extends StatefulWidget {
   /// Default is [CellStyle.footer()]
   final CellStyle? footerStyle;
 
+  /// The builder to custom the sliver headers of [FlexGrid]
+  final SliverHeadersBuilder? sliverHeadersBuilder;
+
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -196,51 +200,99 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
     return buildGestureDetector(
       child: LayoutBuilder(
         builder: (BuildContext b, BoxConstraints boxConstraints) {
-          Widget list = LoadingMoreList<T>(ListConfig<T>(
-            sourceList: widget.source,
-            itemExtent:
-                widget.verticalHighPerformance ? _cellStyle.height : null,
-            itemBuilder: (BuildContext context, T data, int row) {
-              return _rowBuilder(
-                row,
-                context,
-                boxConstraints,
-                _cellStyle,
-                CellStyleType.cell,
-              );
-            },
-            itemCountBuilder: (int index) =>
-                widget.source.length - widget.frozenedRowsCount,
-            //childCount: widget.list.length - widget.frozenedRowsCount,
-            extendedListDelegate: widget.extendedListDelegate,
-            indicatorBuilder: widget.indicatorBuilder,
-            scrollDirection: Axis.vertical,
-            physics: widget.physics,
-            controller: widget.controller,
-            showGlowLeading: widget.showGlowLeading,
-            showGlowTrailing: widget.showGlowTrailing,
-          ));
+          Widget list = widget.sliverHeadersBuilder != null
+              ? LoadingMoreCustomScrollView(
+                  slivers: <Widget>[
+                    ...widget.sliverHeadersBuilder!(
+                      context,
+                      widget.headerBuilder != null
+                          ? SliverToBoxAdapter(
+                              child: _rowBuilder(
+                                0,
+                                context,
+                                boxConstraints,
+                                _headerStyle,
+                                CellStyleType.header,
+                              ),
+                            )
+                          : null,
+                    ),
+                    LoadingMoreSliverList<T>(
+                      SliverListConfig<T>(
+                        sourceList: widget.source,
+                        itemExtent: widget.verticalHighPerformance
+                            ? _cellStyle.height
+                            : null,
+                        itemBuilder: (BuildContext context, T data, int row) {
+                          return _rowBuilder(
+                            row,
+                            context,
+                            boxConstraints,
+                            _cellStyle,
+                            CellStyleType.cell,
+                          );
+                        },
+                        childCountBuilder: (int index) =>
+                            widget.source.length - widget.frozenedRowsCount,
+                        extendedListDelegate: widget.extendedListDelegate,
+                        indicatorBuilder: widget.indicatorBuilder,
+                      ),
+                    )
+                  ],
+                  scrollDirection: Axis.vertical,
+                  physics: widget.physics,
+                  controller: widget.controller,
+                  showGlowLeading: widget.showGlowLeading,
+                  showGlowTrailing: widget.showGlowTrailing,
+                )
+              : LoadingMoreList<T>(ListConfig<T>(
+                  sourceList: widget.source,
+                  itemExtent:
+                      widget.verticalHighPerformance ? _cellStyle.height : null,
+                  itemBuilder: (BuildContext context, T data, int row) {
+                    return _rowBuilder(
+                      row,
+                      context,
+                      boxConstraints,
+                      _cellStyle,
+                      CellStyleType.cell,
+                    );
+                  },
+                  itemCountBuilder: (int index) =>
+                      widget.source.length - widget.frozenedRowsCount,
+                  extendedListDelegate: widget.extendedListDelegate,
+                  indicatorBuilder: widget.indicatorBuilder,
+                  scrollDirection: Axis.vertical,
+                  physics: widget.physics,
+                  controller: widget.controller,
+                  showGlowLeading: widget.showGlowLeading,
+                  showGlowTrailing: widget.showGlowTrailing,
+                ));
 
           if (widget.headerBuilder == null &&
               widget.footerBuilder == null &&
+              widget.headersBuilder == null &&
               widget.frozenedRowsCount <= 0) {
             return list;
           }
 
           list = Column(
             children: <Widget>[
-              if (widget.headersBuilder != null && widget.headerBuilder != null)
+              if (widget.headersBuilder != null)
                 ...widget.headersBuilder!(
                   context,
-                  _rowBuilder(
-                    0,
-                    context,
-                    boxConstraints,
-                    _headerStyle,
-                    CellStyleType.header,
-                  ),
+                  widget.headerBuilder != null
+                      ? _rowBuilder(
+                          0,
+                          context,
+                          boxConstraints,
+                          _headerStyle,
+                          CellStyleType.header,
+                        )
+                      : null,
                 )
-              else if (widget.headerBuilder != null)
+              else if (widget.sliverHeadersBuilder == null &&
+                  widget.headerBuilder != null)
                 _rowBuilder(
                   0,
                   context,

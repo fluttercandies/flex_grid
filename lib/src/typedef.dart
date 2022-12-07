@@ -32,5 +32,11 @@ typedef FooterBuilder = Widget Function(
 
 typedef HeadersBuilder = List<Widget> Function(
   BuildContext context,
-  Widget header,
+  Widget? header,
+);
+
+/// must be return slivers
+typedef SliverHeadersBuilder = List<Widget> Function(
+  BuildContext context,
+  Widget? sliverHeader,
 );
