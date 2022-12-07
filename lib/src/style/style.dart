@@ -88,6 +88,8 @@ class CellStyle {
 
   Widget apply(
     Widget child,
+    // -1 header,
+    // -2 footer,
     int row,
     int column, {
     CellStyleType type = CellStyleType.cell,

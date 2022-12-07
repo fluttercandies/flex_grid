@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import, unused_import, directives_ordering
+
 import 'dart:async';
 import 'dart:ui';
 
@@ -7,10 +9,12 @@ import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 @FFArgumentImport()
 import 'package:flex_grid/flex_grid.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
+import 'package:extended_sliver/extended_sliver.dart';
 
 const double leftRightMargin = 15;
 
@@ -78,6 +82,22 @@ class _StockListState extends State<StockList> {
               horizontalPhysics: const ClampingScrollPhysics(),
               cellStyle: cellStyle,
               headerStyle: cellStyle,
+              frozenedRowsCount: 1,
+              // sliverHeadersBuilder:
+              //     (BuildContext context, Widget sliverHeader) {
+              //   return <Widget>[
+              //     sliverHeader,
+              //     SliverPinnedToBoxAdapter(
+              //       child: PullToRefreshContainer(
+              //           (PullToRefreshScrollNotificationInfo info) {
+              //         return PullToRefreshHeader(
+              //           info,
+              //           source.lastRefreshTime,
+              //         );
+              //       }),
+              //     ),
+              //   ];
+              // },
               headersBuilder: (BuildContext b, Widget header) {
                 return <Widget>[
                   header,
@@ -175,9 +195,21 @@ class _StockListState extends State<StockList> {
                                 color: Colors.grey.withOpacity(0.5),
                                 child: Row(
                                   children: <Widget>[
-                                    getButton('timelapse', Icons.timelapse),
-                                    getButton('airplay', Icons.airplay),
-                                    getButton('bedtime', Icons.bedtime),
+                                    getButton(
+                                      'timelapse',
+                                      Icons.timelapse,
+                                      showMenu,
+                                    ),
+                                    getButton(
+                                      'airplay',
+                                      Icons.airplay,
+                                      showMenu,
+                                    ),
+                                    getButton(
+                                      'bedtime',
+                                      Icons.bedtime,
+                                      showMenu,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -224,13 +256,16 @@ class _StockListState extends State<StockList> {
     );
   }
 
-  Widget getButton(String label, IconData icon) {
+  Widget getButton(String label, IconData icon, bool show) {
     return Expanded(
       child: TextButton.icon(
         onPressed: () {
           showToast(label);
         },
-        icon: Icon(icon),
+        icon: Icon(
+          icon,
+          size: show ? 25 : 0,
+        ),
         label: Text(label),
       ),
     );

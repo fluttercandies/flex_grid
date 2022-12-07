@@ -2,6 +2,7 @@
 
 import 'dart:math';
 
+import 'package:extended_sliver/extended_sliver.dart';
 import 'package:extended_tabs/extended_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_more_list/loading_more_list.dart';
@@ -206,9 +207,9 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                     ...widget.sliverHeadersBuilder!(
                       context,
                       widget.headerBuilder != null
-                          ? SliverToBoxAdapter(
+                          ? SliverPinnedToBoxAdapter(
                               child: _rowBuilder(
-                                0,
+                                -1,
                                 context,
                                 boxConstraints,
                                 _headerStyle,
@@ -217,6 +218,12 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                             )
                           : null,
                     ),
+                    if (widget.frozenedRowsCount > 0)
+                      SliverPinnedToBoxAdapter(
+                          child: _buildFrozenedRows(
+                        context,
+                        boxConstraints,
+                      )),
                     LoadingMoreSliverList<T>(
                       SliverListConfig<T>(
                         sourceList: widget.source,
@@ -278,59 +285,37 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
 
           list = Column(
             children: <Widget>[
-              if (widget.headersBuilder != null)
-                ...widget.headersBuilder!(
-                  context,
-                  widget.headerBuilder != null
-                      ? _rowBuilder(
-                          0,
-                          context,
-                          boxConstraints,
-                          _headerStyle,
-                          CellStyleType.header,
-                        )
-                      : null,
-                )
-              else if (widget.sliverHeadersBuilder == null &&
-                  widget.headerBuilder != null)
-                _rowBuilder(
-                  0,
-                  context,
-                  boxConstraints,
-                  _headerStyle,
-                  CellStyleType.header,
-                ),
-              // frozened rows
-              if (widget.frozenedRowsCount > 0)
-                StreamBuilder<LoadingMoreBase<T>>(
-                  stream: widget.source.rebuild,
-                  initialData: widget.source,
-                  builder: (BuildContext b,
-                      AsyncSnapshot<LoadingMoreBase<T>> asyncSnapshot) {
-                    if (widget.source.isEmpty) {
-                      return Container();
-                    }
-                    return Column(
-                      children: List<Widget>.generate(
-                        min(widget.frozenedRowsCount, widget.source.length),
-                        (int row) {
-                          return _rowBuilder(
-                            row,
+              if (widget.sliverHeadersBuilder == null) ...<Widget>[
+                if (widget.headersBuilder != null)
+                  ...widget.headersBuilder!(
+                    context,
+                    widget.headerBuilder != null
+                        ? _rowBuilder(
+                            -1,
                             context,
                             boxConstraints,
-                            _cellStyle,
-                            CellStyleType.cell,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+                            _headerStyle,
+                            CellStyleType.header,
+                          )
+                        : null,
+                  )
+                else if (widget.headerBuilder != null)
+                  _rowBuilder(
+                    -1,
+                    context,
+                    boxConstraints,
+                    _headerStyle,
+                    CellStyleType.header,
+                  ),
 
+                // frozened rows
+                if (widget.frozenedRowsCount > 0)
+                  _buildFrozenedRows(context, boxConstraints),
+              ],
               Expanded(child: list),
               if (widget.footerBuilder != null)
                 _rowBuilder(
-                  0,
+                  -2,
                   context,
                   boxConstraints,
                   _footerStyle,
@@ -345,14 +330,47 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
     );
   }
 
+  Widget _buildFrozenedRows(
+      BuildContext context, BoxConstraints boxConstraints) {
+    return StreamBuilder<LoadingMoreBase<T>>(
+      stream: widget.source.rebuild,
+      initialData: widget.source,
+      builder:
+          (BuildContext b, AsyncSnapshot<LoadingMoreBase<T>> asyncSnapshot) {
+        if (widget.source.isEmpty) {
+          return Container();
+        }
+        return Column(
+          children: List<Widget>.generate(
+            min(widget.frozenedRowsCount, widget.source.length),
+            (int row) {
+              return _rowBuilder(
+                row,
+                context,
+                boxConstraints,
+                _cellStyle,
+                CellStyleType.cell,
+                frozenedRows: true,
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _rowBuilder(
     int row,
     BuildContext context,
     BoxConstraints boxConstraints,
     CellStyle style,
-    CellStyleType type,
-  ) {
-    row = row + widget.frozenedRowsCount;
+    CellStyleType type, {
+    bool frozenedRows = false,
+  }) {
+    if (!frozenedRows) {
+      row = row + widget.frozenedRowsCount;
+    }
+
     Widget rowWidget = GlowNotificationWidget(
       ListView.builder(
         padding: EdgeInsets.zero,
