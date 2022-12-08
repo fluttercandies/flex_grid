@@ -388,7 +388,9 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
         physics:
             _defaultHorizontalScrollPhysics.applyTo(widget.horizontalPhysics),
         scrollDirection: Axis.horizontal,
-        itemCount: widget.columnsCount - widget.frozenedColumnsCount,
+        itemCount: widget.columnsCount -
+            widget.frozenedColumnsCount -
+            widget.frozenedTrailingColumnsCount,
         itemExtent: widget.horizontalHighPerformance ? style.width : null,
         //scrollBehavior: _defaultHorizontalScrollBehavior,
       ),

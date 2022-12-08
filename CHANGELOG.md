@@ -1,3 +1,7 @@
+## 5.0.1
+
+* fix scrollable columns(in the row) are not right.
+
 ## 5.0.0
 
 * Breaking Change: headersBuilder are not require a list of slivers now.
