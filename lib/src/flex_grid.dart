@@ -116,7 +116,11 @@ class FlexGrid<T> extends StatefulWidget {
   final ScrollPhysics? horizontalPhysics;
 
   /// If true, forces the horizontal children to have the given extent(Cell width) in the scroll
-  /// horizontal direction.
+  /// horizontal direction, it will use ListView.builder(extent: cellwidth)
+  /// but it's jank when scroll, see issue https://github.com/flutter/flutter/issues/116765
+  ///
+  /// default: use SingleChildScrollView
+
   final bool horizontalHighPerformance;
 
   /// If true, forces the vertical children to have the given extent(Cell height) in the scroll
@@ -243,6 +247,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                             widget.source.length - widget.frozenedRowsCount,
                         extendedListDelegate: widget.extendedListDelegate,
                         indicatorBuilder: widget.indicatorBuilder,
+                        padding: EdgeInsets.zero,
                       ),
                     )
                   ],
@@ -274,6 +279,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                   controller: widget.controller,
                   showGlowLeading: widget.showGlowLeading,
                   showGlowTrailing: widget.showGlowTrailing,
+                  padding: EdgeInsets.zero,
                 ));
 
           if (widget.headerBuilder == null &&
@@ -372,28 +378,50 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
     }
 
     Widget rowWidget = GlowNotificationWidget(
-      ListView.builder(
-        padding: EdgeInsets.zero,
-        itemBuilder: (BuildContext context, int column) {
-          column = column + widget.frozenedColumnsCount;
-          return _buildContent(
-            style,
-            type,
-            context,
-            row,
-            column,
-          );
-        },
-        controller: _horizontalController,
-        physics:
-            _defaultHorizontalScrollPhysics.applyTo(widget.horizontalPhysics),
-        scrollDirection: Axis.horizontal,
-        itemCount: widget.columnsCount -
-            widget.frozenedColumnsCount -
-            widget.frozenedTrailingColumnsCount,
-        itemExtent: widget.horizontalHighPerformance ? style.width : null,
-        //scrollBehavior: _defaultHorizontalScrollBehavior,
-      ),
+      widget.horizontalHighPerformance
+          ? ListView.builder(
+              padding: EdgeInsets.zero,
+              itemBuilder: (BuildContext context, int column) {
+                column = column + widget.frozenedColumnsCount;
+                return _buildContent(
+                  style,
+                  type,
+                  context,
+                  row,
+                  column,
+                );
+              },
+              controller: _horizontalController,
+              physics: _defaultHorizontalScrollPhysics
+                  .applyTo(widget.horizontalPhysics),
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.columnsCount -
+                  widget.frozenedColumnsCount -
+                  widget.frozenedTrailingColumnsCount,
+              itemExtent: style.width,
+              //scrollBehavior: _defaultHorizontalScrollBehavior,
+            )
+          : SingleChildScrollView(
+              padding: EdgeInsets.zero,
+              controller: _horizontalController,
+              physics: _defaultHorizontalScrollPhysics
+                  .applyTo(widget.horizontalPhysics),
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                  children: List<Widget>.generate(
+                      widget.columnsCount -
+                          widget.frozenedColumnsCount -
+                          widget.frozenedTrailingColumnsCount, (int column) {
+                column = column + widget.frozenedColumnsCount;
+                return _buildContent(
+                  style,
+                  type,
+                  context,
+                  row,
+                  column,
+                );
+              })),
+            ),
       showGlowLeading: widget.showHorizontalGlowLeading,
       showGlowTrailing: widget.showHorizontalGlowTrailing,
     );

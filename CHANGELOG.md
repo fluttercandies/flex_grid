@@ -1,3 +1,7 @@
+## 5.0.2
+
+* fix jank due to horizontal ListView. see issue: https://github.com/flutter/flutter/issues/116765
+
 ## 5.0.1
 
 * fix scrollable columns(in the row) are not right.
