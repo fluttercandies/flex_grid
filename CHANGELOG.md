@@ -1,3 +1,7 @@
+## 5.0.3
+
+* add shrinkWrap property for FlexGrid
+
 ## 5.0.2
 
 * fix jank due to horizontal ListView. see issue: https://github.com/flutter/flutter/issues/116765

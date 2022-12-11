@@ -41,6 +41,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.footerBuilder,
     this.footerStyle,
     this.sliverHeadersBuilder,
+    this.shrinkWrap = false,
   })  : assert(columnsCount != 0),
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
         assert(frozenedRowsCount != null && frozenedRowsCount >= 0),
@@ -156,6 +157,22 @@ class FlexGrid<T> extends StatefulWidget {
   /// The builder to custom the sliver headers of [FlexGrid]
   final SliverHeadersBuilder? sliverHeadersBuilder;
 
+  /// Whether the extent of the scroll view in the [scrollDirection] should be
+  /// determined by the contents being viewed.
+  ///
+  /// If the scroll view does not shrink wrap, then the scroll view will expand
+  /// to the maximum allowed size in the [scrollDirection]. If the scroll view
+  /// has unbounded constraints in the [scrollDirection], then [shrinkWrap] must
+  /// be true.
+  ///
+  /// Shrink wrapping the content of the scroll view is significantly more
+  /// expensive than expanding to the maximum allowed size because the content
+  /// can expand and contract during scrolling, which means the size of the
+  /// scroll view needs to be recomputed whenever the scroll position changes.
+  ///
+  /// Defaults to false.
+  final bool shrinkWrap;
+
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -207,6 +224,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
         builder: (BuildContext b, BoxConstraints boxConstraints) {
           Widget list = widget.sliverHeadersBuilder != null
               ? LoadingMoreCustomScrollView(
+                  shrinkWrap: widget.shrinkWrap,
                   slivers: <Widget>[
                     ...widget.sliverHeadersBuilder!(
                       context,
@@ -258,6 +276,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
                   showGlowTrailing: widget.showGlowTrailing,
                 )
               : LoadingMoreList<T>(ListConfig<T>(
+                  shrinkWrap: widget.shrinkWrap,
                   sourceList: widget.source,
                   itemExtent:
                       widget.verticalHighPerformance ? _cellStyle.height : null,
