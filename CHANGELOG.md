@@ -1,3 +1,11 @@
+## 5.0.4
+
+* add maxWidth property for FlexGrid, it's max width of row.
+if it's null, we will use LayoutBuilder to get maxwidth.
+but if it's in NestedScrollView body or SliverFillRemaining,
+LayoutBuilder will rebuild everytime when scroll.(height is changed,but width is not).
+it will has performance problem.
+
 ## 5.0.3
 
 * add shrinkWrap property for FlexGrid
