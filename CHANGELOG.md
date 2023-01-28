@@ -1,3 +1,7 @@
+## 5.0.5
+
+* add cacheExtent property for FlexGrid
+
 ## 5.0.4
 
 * add maxWidth property for FlexGrid, it's max width of row.

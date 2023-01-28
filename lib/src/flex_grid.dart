@@ -43,6 +43,7 @@ class FlexGrid<T> extends StatefulWidget {
     this.sliverHeadersBuilder,
     this.shrinkWrap = false,
     this.maxWidth,
+    this.cacheExtent,
   })  : assert(columnsCount != 0),
         assert(frozenedColumnsCount != null && frozenedColumnsCount >= 0),
         assert(frozenedRowsCount != null && frozenedRowsCount >= 0),
@@ -181,6 +182,8 @@ class FlexGrid<T> extends StatefulWidget {
   /// it will has performance problem.
   final double? maxWidth;
 
+  final double? cacheExtent;
+
   @override
   _FlexGridState<T> createState() => _FlexGridState<T>();
 }
@@ -242,6 +245,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
     Widget list = widget.sliverHeadersBuilder != null
         ? LoadingMoreCustomScrollView(
             shrinkWrap: widget.shrinkWrap,
+            cacheExtent: widget.cacheExtent,
             slivers: <Widget>[
               ...widget.sliverHeadersBuilder!(
                 context,
@@ -292,6 +296,7 @@ class _FlexGridState<T> extends LinkScrollState<FlexGrid<T>> {
             showGlowTrailing: widget.showGlowTrailing,
           )
         : LoadingMoreList<T>(ListConfig<T>(
+            cacheExtent: widget.cacheExtent,
             shrinkWrap: widget.shrinkWrap,
             sourceList: widget.source,
             itemExtent:
