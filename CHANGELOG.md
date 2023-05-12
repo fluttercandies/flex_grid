@@ -1,3 +1,7 @@
+## 5.1.0
+
+* Migrate to Flutter 3.10.0
+
 ## 5.0.5
 
 * add cacheExtent property for FlexGrid

@@ -8,25 +8,25 @@ double refreshHeight = maxDragOffset / 1.5;
 
 class PullToRefreshHeader extends StatelessWidget {
   const PullToRefreshHeader(this.info, this.lastRefreshTime, {this.color});
-  final PullToRefreshScrollNotificationInfo info;
-  final DateTime lastRefreshTime;
-  final Color color;
+  final PullToRefreshScrollNotificationInfo? info;
+  final DateTime? lastRefreshTime;
+  final Color? color;
   @override
   Widget build(BuildContext context) {
     if (info == null) {
       return Container();
     }
     String text = '';
-    if (info.mode == RefreshIndicatorMode.armed) {
+    if (info!.mode == PullToRefreshIndicatorMode.armed) {
       text = 'Release to refresh';
-    } else if (info.mode == RefreshIndicatorMode.refresh ||
-        info.mode == RefreshIndicatorMode.snap) {
+    } else if (info!.mode == PullToRefreshIndicatorMode.refresh ||
+        info!.mode == PullToRefreshIndicatorMode.snap) {
       text = 'Loading...';
-    } else if (info.mode == RefreshIndicatorMode.done) {
+    } else if (info!.mode == PullToRefreshIndicatorMode.done) {
       text = 'Refresh completed.';
-    } else if (info.mode == RefreshIndicatorMode.drag) {
+    } else if (info!.mode == PullToRefreshIndicatorMode.drag) {
       text = 'Pull to refresh';
-    } else if (info.mode == RefreshIndicatorMode.canceled) {
+    } else if (info!.mode == PullToRefreshIndicatorMode.canceled) {
       text = 'Cancel refresh';
     }
 

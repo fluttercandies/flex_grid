@@ -16,7 +16,7 @@ import 'package:pull_to_refresh_notification/pull_to_refresh_notification.dart';
 )
 class HugeDataDemo extends StatefulWidget {
   const HugeDataDemo({
-    Key key,
+    Key? key,
   }) : super(key: key);
   @override
   _HugeDataDemoState createState() => _HugeDataDemoState();

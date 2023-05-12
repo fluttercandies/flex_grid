@@ -3,7 +3,7 @@ import 'package:loading_more_list/loading_more_list.dart';
 
 class BigDataRow extends FlexGridRow {
   BigDataRow({this.name});
-  final String name;
+  final String? name;
 
   @override
   List<Object> get columns =>

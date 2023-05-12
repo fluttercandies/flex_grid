@@ -14,15 +14,15 @@ import 'package:flutter/material.dart';
   },
 )
 class TabView extends StatefulWidget {
-  const TabView({Key key}) : super(key: key);
+  const TabView({Key? key}) : super(key: key);
 
   @override
   _TabViewState createState() => _TabViewState();
 }
 
 class _TabViewState extends State<TabView> with TickerProviderStateMixin {
-  TabController controller;
-  TabController controller1;
+  TabController? controller;
+  TabController? controller1;
   @override
   void initState() {
     super.initState();
@@ -84,7 +84,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
 }
 
 class KeepAliveWidget extends StatefulWidget {
-  const KeepAliveWidget({Key key}) : super(key: key);
+  const KeepAliveWidget({Key? key}) : super(key: key);
   @override
   _KeepAliveWidgetState createState() => _KeepAliveWidgetState();
 }

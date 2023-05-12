@@ -29,7 +29,7 @@ const double leftRightMargin = 15;
 )
 class StockList extends StatefulWidget {
   const StockList({
-    Key key,
+    Key? key,
   }) : super(key: key);
   @override
   _StockListState createState() => _StockListState();
@@ -58,7 +58,7 @@ class _StockListState extends State<StockList> {
   @override
   Widget build(BuildContext context) {
     final Color borderColor = Colors.grey.withOpacity(0.5);
-    final double windowWidth = MediaQueryData.fromWindow(window).size.width;
+    final double windowWidth = MediaQuery.of(context).size.width;
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
@@ -98,11 +98,11 @@ class _StockListState extends State<StockList> {
               //     ),
               //   ];
               // },
-              headersBuilder: (BuildContext b, Widget header) {
+              headersBuilder: (BuildContext b, Widget? header) {
                 return <Widget>[
-                  header,
+                  header!,
                   PullToRefreshContainer(
-                      (PullToRefreshScrollNotificationInfo info) {
+                      (PullToRefreshScrollNotificationInfo? info) {
                     return PullToRefreshHeader(
                       info,
                       source.lastRefreshTime,
@@ -119,9 +119,9 @@ class _StockListState extends State<StockList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Text(data.name),
+                      Text(data.name!),
                       Text(
-                        data.code,
+                        data.code!,
                         style: TextStyle(
                           color: Colors.grey.withOpacity(0.8),
                         ),
@@ -133,7 +133,7 @@ class _StockListState extends State<StockList> {
                     selector: (BuildContext b, StockInfo vm) =>
                         vm.backgroundColor,
                     builder:
-                        (BuildContext b, Color backgroundColor, Widget child) {
+                        (BuildContext b, Color backgroundColor, Widget? child) {
                       final Widget cell = Container(
                         child: Text(
                           data.columns[column].toString(),
@@ -187,7 +187,7 @@ class _StockListState extends State<StockList> {
                           selector: (BuildContext b, StockInfo vm) =>
                               vm.showMenu,
                           builder:
-                              (BuildContext b, bool showMenu, Widget child) {
+                              (BuildContext b, bool showMenu, Widget? child) {
                             return AnimatedContainer(
                               width: windowWidth,
                               height: showMenu ? cellStyle.height : 0,
@@ -231,7 +231,7 @@ class _StockListState extends State<StockList> {
               stream: _showShaderontroller.stream,
               initialData: true,
               builder: (BuildContext c, AsyncSnapshot<bool> snapshot) {
-                if (!snapshot.data) {
+                if (!snapshot.data!) {
                   return Container();
                 }
                 return Container(
@@ -286,7 +286,7 @@ class StockCellStyle extends CellStyle {
   }
 
   @override
-  double getHeight({int row}) {
+  double getHeight({required int row}) {
     // you can custom height for one row
     // if (row == 0) {
     //   return 200;

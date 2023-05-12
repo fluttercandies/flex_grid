@@ -15,9 +15,9 @@ import 'pages/simple/huge_data.dart';
 import 'pages/simple/tab_view.dart';
 
 FFRouteSettings getRouteSettings({
-  @required String name,
-  Map<String, dynamic> arguments,
-  PageBuilder notFoundPageBuilder,
+  required String name,
+  Map<String, dynamic>? arguments,
+  PageBuilder? notFoundPageBuilder,
 }) {
   final Map<String, dynamic> safeArguments =
       arguments ?? const <String, dynamic>{};
@@ -98,7 +98,7 @@ FFRouteSettings getRouteSettings({
         builder: () => DemoGroupPage(
           keyValue: asT<MapEntry<String, List<DemoRouteResult>>>(
             safeArguments['keyValue'],
-          ),
+          )!,
         ),
         routeName: 'DemoGroupPage',
       );

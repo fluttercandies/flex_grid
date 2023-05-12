@@ -1,11 +1,11 @@
 import 'dart:async';
-
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 // ignore: implementation_imports
 import 'package:equatable/src/equatable_utils.dart' show equals;
 import 'package:flex_grid/flex_grid.dart';
 import 'package:flutter/material.dart';
-import 'package:gbk2utf8/gbk2utf8.dart';
+import 'package:flutter_gbk2utf8/flutter_gbk2utf8.dart';
 import 'package:http_client_helper/http_client_helper.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
@@ -90,8 +90,8 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
   int _lastIndex = -1;
   @override
   bool get hasMore => skipNumber < symbols.length;
-  Timer _timer;
-  DateTime lastRefreshTime;
+  late Timer _timer;
+  DateTime? lastRefreshTime;
   int get frozenedColumnsCount => 1;
   @override
   Future<bool> refresh([bool notifyStateChanged = false]) async {
@@ -117,7 +117,8 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
 
       final String url =
           _url + '/q=${symbols.skip(skipNumber).take(10).join(',')}';
-      final Response result = await HttpClientHelper.get(Uri.parse(url));
+      final Response result =
+          await (HttpClientHelper.get(Uri.parse(url)) as FutureOr<Response>);
       if (result.statusCode != 200) {
         return isSuccess;
       }
@@ -151,7 +152,8 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
     if (_firstIndex >= 0 && _lastIndex > _firstIndex && _lastIndex < length) {
       final String url = _url +
           '/q=${skip(_firstIndex).take(_lastIndex - _firstIndex).map((StockInfo e) => e.fullCode).join(',')}';
-      final Response result = await HttpClientHelper.get(Uri.parse(url));
+      final Response result =
+          await (HttpClientHelper.get(Uri.parse(url)) as FutureOr<Response>);
 
       if (result.statusCode == 200) {
         final List<String> stocks = gbk.decode(result.bodyBytes).split('\n');
@@ -160,9 +162,10 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
         if (stocks.isNotEmpty) {
           for (final String stock in stocks) {
             final StockInfo newStock = StockInfo.fromLine(stock);
-            final StockInfo oldStock = firstWhere(
-                (StockInfo element) => newStock == element,
-                orElse: () => null);
+
+            final StockInfo? oldStock = firstWhereOrNull(
+              (StockInfo element) => newStock == element,
+            );
             if (oldStock != null) {
               oldStock.update(newStock);
             }
@@ -208,21 +211,21 @@ class StockInfo with FlexGridRow, EquatableMixin, ChangeNotifier {
       low: asT<double>(fileds[34]),
     );
   }
-  String fullCode;
-  String name;
-  String code;
-  double price;
-  double close;
-  double open;
-  String volume;
-  double change;
-  double changePercent;
-  double high;
-  double low;
-  String amount;
+  String? fullCode;
+  String? name;
+  String? code;
+  double? price;
+  double? close;
+  double? open;
+  String? volume;
+  double? change;
+  double? changePercent;
+  double? high;
+  double? low;
+  String? amount;
 
   @override
-  List<Object> get columns => <Object>[
+  List<Object?> get columns => <Object?>[
         name,
         price,
         close,
@@ -235,7 +238,7 @@ class StockInfo with FlexGridRow, EquatableMixin, ChangeNotifier {
         amount,
       ];
 
-  Color getTextColor(int column) {
+  Color? getTextColor(int column) {
     if (column == 1) {
       return _getTextColor(price, close);
     } else if (column == 3) {
@@ -250,10 +253,10 @@ class StockInfo with FlexGridRow, EquatableMixin, ChangeNotifier {
     return null;
   }
 
-  Color _getTextColor(double left, double right) {
+  Color _getTextColor(double? left, double? right) {
     return left == right
         ? Colors.black
-        : (left > right ? Colors.red : Colors.green);
+        : (left! > right! ? Colors.red : Colors.green);
   }
 
   void update(StockInfo stockInfo) {
@@ -278,11 +281,11 @@ class StockInfo with FlexGridRow, EquatableMixin, ChangeNotifier {
   }
 
   @override
-  List<Object> get props => <Object>[
+  List<Object?> get props => <Object?>[
         fullCode,
       ];
 
-  List<Object> get compareProps => <Object>[
+  List<Object?> get compareProps => <Object?>[
         fullCode,
         name,
         price,

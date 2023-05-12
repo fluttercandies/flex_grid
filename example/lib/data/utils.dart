@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 void tryCatch(Function f) {
   try {
-    f?.call();
+    f.call();
   } catch (e, stack) {
     log('$e');
     log('$stack');
@@ -16,15 +16,15 @@ void tryCatch(Function f) {
 class FFConvert {
   FFConvert._();
 
-  static T Function<T>(dynamic value) convert = <T>(dynamic value) {
+  static T? Function<T>(dynamic value) convert = <T>(dynamic value) {
     if (value == null) {
       return null;
     }
-    return json.decode(value.toString()) as T;
+    return json.decode(value.toString()) as T?;
   };
 }
 
-T asT<T>(dynamic value, [T defaultValue]) {
+T? asT<T>(dynamic value, [T? defaultValue]) {
   if (value is T) {
     return value;
   }
@@ -57,9 +57,9 @@ T asT<T>(dynamic value, [T defaultValue]) {
 class MyCellStyle extends CellStyle {
   MyCellStyle({
     Alignment alignment = Alignment.center,
-    EdgeInsetsGeometry padding,
-    Color color,
-    Decoration decoration,
+    EdgeInsetsGeometry? padding,
+    Color? color,
+    Decoration? decoration,
     double height = 60,
     double width = 100,
     this.frozenedColumnsCount = 0,

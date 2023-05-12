@@ -18,12 +18,12 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.10.0 <3.0.0"
-  flutter: ">=2.0.0"
+  sdk: '>=2.12.0 <4.0.0'
+  flutter: ">=3.10.0"
 
 dependencies:
-  flex_grid:
-    path: ../
+  flex_grid: 
+   path: ../
   ff_annotation_route_library: 3.0.0
   url_launcher: any  
   pull_to_refresh_notification: any  
@@ -37,9 +37,10 @@ dependencies:
   flutter_rating_bar: any
   uuid: any
   timezone: any
-  gbk2utf8: any
+  flutter_gbk2utf8: any
   equatable: any
   provider: any
+  collection: any
   flutter:
     sdk: flutter
 

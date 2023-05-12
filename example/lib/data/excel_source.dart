@@ -4,13 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:loading_more_list/loading_more_list.dart';
 
 class ExcelSource extends LoadingMoreBase<List<dynamic>> {
-  Sheet _sheet;
-  Sheet get sheet => _sheet;
+  Sheet? _sheet;
+  Sheet? get sheet => _sheet;
   Future<void> init() async {
     if (_sheet == null) {
       final ByteData data = await rootBundle.load(Assets.assets_flexgrid_xlsx);
       _sheet = Excel.decodeBytes(data.buffer.asUint8List()).sheets['Sheet1'];
-      _rows = _sheet.rows.skip(1).toList();
+      _rows = _sheet!.rows.skip(1).toList();
     }
   }
 
@@ -18,10 +18,10 @@ class ExcelSource extends LoadingMoreBase<List<dynamic>> {
   @override
   bool get hasMore => _hasMore;
   int i = 0;
-  int get maxCols => _sheet?.maxCols;
-  List<dynamic> get headers => _sheet?.rows?.first;
+  int? get maxCols => _sheet?.maxCols;
+  List<dynamic>? get headers => _sheet?.rows.first;
 
-  List<List<dynamic>> _rows;
+  late List<List<dynamic>> _rows;
   @override
   Future<bool> loadData([bool isloadMoreAction = false]) async {
     if (_sheet != null) {
@@ -55,19 +55,19 @@ class ExcelSource extends LoadingMoreBase<List<dynamic>> {
     _sortType = SortType.values[type];
     switch (_sortType) {
       case SortType.none:
-        _rows = _sheet.rows.skip(1).toList();
+        _rows = _sheet!.rows.skip(1).toList();
 
         break;
       case SortType.ascending:
         _rows.sort((List<dynamic> a, List<dynamic> b) =>
-            double.tryParse(a[index].toString())
-                .compareTo(double.tryParse(b[index].toString())));
+            double.tryParse(a[index].toString())!
+                .compareTo(double.tryParse(b[index].toString())!));
 
         break;
       case SortType.descending:
         _rows.sort((List<dynamic> a, List<dynamic> b) =>
-            double.tryParse(b[index].toString())
-                .compareTo(double.tryParse(a[index].toString())));
+            double.tryParse(b[index].toString())!
+                .compareTo(double.tryParse(a[index].toString())!));
 
         break;
       default:

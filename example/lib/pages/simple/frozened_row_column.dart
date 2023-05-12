@@ -19,10 +19,10 @@ const double leftRightMargin = 15;
 )
 class FrozenedRowColumn extends StatefulWidget {
   const FrozenedRowColumn({
-    Key key,
+    Key? key,
     this.link = false,
   }) : super(key: key);
-  final bool link;
+  final bool? link;
 
   @override
   _FrozenedRowColumnState createState() => _FrozenedRowColumnState();
@@ -52,7 +52,7 @@ class _FrozenedRowColumnState extends State<FrozenedRowColumn> {
         footerStyle: style,
         columnsCount: GridRow.cloumnNames.length,
         horizontalPhysics: const ClampingScrollPhysics(),
-        link: widget.link,
+        link: widget.link!,
         physics: const AlwaysScrollableClampingScrollPhysics(),
         cellBuilder: (BuildContext context, GridRow data, int row, int column) {
           return Text(column == 0 ? '$row' : data.columns[column].toString());

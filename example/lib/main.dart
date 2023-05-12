@@ -18,16 +18,16 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      builder: (BuildContext c, Widget w) {
+      builder: (BuildContext c, Widget? w) {
         if (!kIsWeb) {
           final MediaQueryData data = MediaQuery.of(c);
           w = MediaQuery(
             data: data.copyWith(textScaleFactor: 1.0),
-            child: w,
+            child: w!,
           );
         }
 
-        return w;
+        return w!;
       },
       initialRoute: Routes.fluttercandiesMainpage,
       onGenerateRoute: (RouteSettings settings) {
@@ -56,8 +56,8 @@ class CommonWidget extends StatelessWidget {
     this.child,
     this.title,
   });
-  final Widget child;
-  final String title;
+  final Widget? child;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +66,7 @@ class CommonWidget extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            title,
+            title!,
           ),
         ),
         body: child,

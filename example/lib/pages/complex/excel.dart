@@ -22,7 +22,7 @@ const double leftRightMargin = 15;
   },
 )
 class ExcelDemo extends StatefulWidget {
-  const ExcelDemo({Key key}) : super(key: key);
+  const ExcelDemo({Key? key}) : super(key: key);
 
   @override
   _ExcelDemoState createState() => _ExcelDemoState();
@@ -55,7 +55,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
       margin: const EdgeInsets.all(15),
       child: FlexGrid<List<dynamic>>(
         frozenedColumnsCount: 1,
-        columnsCount: excelSource.maxCols,
+        columnsCount: excelSource.maxCols!,
         headerStyle: ExcelCellStyle(),
         cellStyle: ExcelCellStyle(),
         physics: const AlwaysScrollableClampingScrollPhysics(),
@@ -69,7 +69,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
               : (row % 2 == 0 ? Colors.grey.withOpacity(0.1) : Colors.white);
 
           Color textColor = Colors.black;
-          Widget widget;
+          Widget? widget;
           if (column == 1) {
             showText = DateFormat('yyyy/MM/dd').format(
                 DateTime(1900, 1, 1).add(Duration(days: int.parse(showText))));
@@ -81,8 +81,8 @@ class _ExcelDemoState extends State<ExcelDemo> {
                 showText.split(',').map((String e) {
               x += 2;
 
-              y = max(y, double.tryParse(e));
-              return FlSpot(x, double.tryParse(e));
+              y = max(y, double.tryParse(e)!);
+              return FlSpot(x, double.tryParse(e)!);
             }).toList();
 
             widget = Padding(
@@ -180,7 +180,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
                 bottom: BorderSide(
                   color: borderColor,
                 ),
-                right: column == excelSource.maxCols - 1
+                right: column == excelSource.maxCols! - 1
                     ? BorderSide.none
                     : BorderSide(
                         color: borderColor,
@@ -190,12 +190,12 @@ class _ExcelDemoState extends State<ExcelDemo> {
           );
         },
         headerBuilder: (BuildContext context, int index) {
-          Widget header = Text(excelSource.headers[index].toString());
+          Widget header = Text(excelSource.headers![index].toString());
 
           if (index == 3) {
             header = StatefulBuilder(
               builder: (BuildContext b, StateSetter stateSetter) {
-                IconData icon;
+                IconData? icon;
                 switch (excelSource.sortType) {
                   case SortType.none:
                     icon = Icons.sort;
@@ -220,7 +220,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text(excelSource.headers[index].toString()),
+                        Text(excelSource.headers![index].toString()),
                         const SizedBox(
                           width: 5,
                         ),
@@ -245,7 +245,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
                 bottom: BorderSide(
                   color: borderColor,
                 ),
-                right: index == excelSource.maxCols - 1
+                right: index == excelSource.maxCols! - 1
                     ? BorderSide.none
                     : BorderSide(
                         color: borderColor,
