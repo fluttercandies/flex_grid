@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:example/data/excel_source.dart';
+import 'package:excel/excel.dart' as excel;
 import 'package:ff_annotation_route_library/ff_annotation_route_library.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flex_grid/flex_grid.dart';
@@ -53,7 +54,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
         ),
       ),
       margin: const EdgeInsets.all(15),
-      child: FlexGrid<List<dynamic>>(
+      child: FlexGrid<List<excel.Data?>>(
         frozenedColumnsCount: 1,
         columnsCount: excelSource.maxCols!,
         headerStyle: ExcelCellStyle(),
@@ -61,9 +62,9 @@ class _ExcelDemoState extends State<ExcelDemo> {
         physics: const AlwaysScrollableClampingScrollPhysics(),
         horizontalHighPerformance: true,
         verticalHighPerformance: true,
-        cellBuilder:
-            (BuildContext context, List<dynamic> data, int row, int column) {
-          String showText = data[column].toString();
+        cellBuilder: (BuildContext context, List<excel.Data?> data, int row,
+            int column) {
+          String showText = data[column]!.value.toString();
           Color backgroundColor = column == 0
               ? Colors.yellow
               : (row % 2 == 0 ? Colors.grey.withOpacity(0.1) : Colors.white);
@@ -71,8 +72,8 @@ class _ExcelDemoState extends State<ExcelDemo> {
           Color textColor = Colors.black;
           Widget? widget;
           if (column == 1) {
-            showText = DateFormat('yyyy/MM/dd').format(
-                DateTime(1900, 1, 1).add(Duration(days: int.parse(showText))));
+            showText =
+                DateFormat('yyyy/MM/dd').format(DateTime.parse(showText));
           } else if (column == 4) {
             double x = -2;
             double y = 0;
@@ -190,7 +191,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
           );
         },
         headerBuilder: (BuildContext context, int index) {
-          Widget header = Text(excelSource.headers![index].toString());
+          Widget header = Text(excelSource.headers![index]!.value.toString());
 
           if (index == 3) {
             header = StatefulBuilder(
@@ -220,7 +221,7 @@ class _ExcelDemoState extends State<ExcelDemo> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text(excelSource.headers![index].toString()),
+                        Text(excelSource.headers![index]!.value.toString()),
                         const SizedBox(
                           width: 5,
                         ),

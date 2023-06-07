@@ -117,9 +117,9 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
 
       final String url =
           _url + '/q=${symbols.skip(skipNumber).take(10).join(',')}';
-      final Response result =
-          await (HttpClientHelper.get(Uri.parse(url)) as FutureOr<Response>);
-      if (result.statusCode != 200) {
+      final Response? result = await HttpClientHelper.get(Uri.parse(url));
+
+      if (result == null || result.statusCode != 200) {
         return isSuccess;
       }
 
@@ -152,10 +152,9 @@ class StockRepository extends LoadingMoreBase<StockInfo> {
     if (_firstIndex >= 0 && _lastIndex > _firstIndex && _lastIndex < length) {
       final String url = _url +
           '/q=${skip(_firstIndex).take(_lastIndex - _firstIndex).map((StockInfo e) => e.fullCode).join(',')}';
-      final Response result =
-          await (HttpClientHelper.get(Uri.parse(url)) as FutureOr<Response>);
+      final Response? result = await HttpClientHelper.get(Uri.parse(url));
 
-      if (result.statusCode == 200) {
+      if (result != null && result.statusCode == 200) {
         final List<String> stocks = gbk.decode(result.bodyBytes).split('\n');
         stocks.removeWhere((String element) => element.isEmpty);
 

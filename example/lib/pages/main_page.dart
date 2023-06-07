@@ -115,7 +115,8 @@ class MainPage extends StatelessWidget {
   routeName: 'DemoGroupPage',
 )
 class DemoGroupPage extends StatelessWidget {
-  DemoGroupPage({required MapEntry<String, List<DemoRouteResult>> keyValue})
+  // ignore: always_specify_types
+  DemoGroupPage({required MapEntry keyValue})
       : routes = keyValue.value
           ..sort((DemoRouteResult a, DemoRouteResult b) =>
               a.order!.compareTo(b.order!)),
